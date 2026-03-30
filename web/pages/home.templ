@@ -3,6 +3,7 @@ package pages
 import (
 	"github.com/appkrafterrz/kraft-ui/pkg/ui/badge"
 	"github.com/appkrafterrz/kraft-ui/pkg/ui/card"
+	"github.com/appkrafterrz/kraft-ui/pkg/daisyui"
 	"github.com/appkrafterrz/kraft-ui/web/layouts"
 )
 
@@ -61,6 +62,121 @@ templ Home() {
 				</div>
 			</div>
 		</section>
+		<!-- Before / After -->
+		<section class="py-20 px-4 sm:px-6 max-w-5xl mx-auto">
+			<div class="text-center mb-12">
+				<h2 class="text-2xl font-bold mb-3">See the difference</h2>
+				<p class="text-text-muted max-w-xl mx-auto">A form input field. Something every Go dev writes on every project. Here is what it looks like with and without kraft-ui.</p>
+			</div>
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+				<!-- Before -->
+				<div class="rounded-xl overflow-hidden border border-red-200">
+					<div class="flex items-center justify-between px-4 py-2.5 bg-red-50 border-b border-red-200">
+						<div class="flex items-center gap-2">
+							<span class="h-2 w-2 rounded-full bg-red-400"></span>
+							<span class="text-xs font-semibold text-red-700">Without kraft-ui</span>
+						</div>
+						<span class="text-xs font-mono font-bold text-red-500 bg-red-100 px-2 py-0.5 rounded-full">16 lines</span>
+					</div>
+					<div class="bg-[#22272e] overflow-x-auto">
+						<pre class="p-4 text-xs leading-relaxed m-0 text-[#adbac7]"><code>{ `<div class="flex flex-col gap-1.5">
+  <label class="text-sm font-medium
+                 text-text-primary">
+    Email
+  </label>
+  <input
+    type="email"
+    placeholder="you@example.com"
+    class="rounded-md border border-error-500
+           px-3 py-2 text-sm bg-surface
+           text-text-primary
+           placeholder:text-text-muted
+           focus:outline-none focus:ring-2
+           focus:ring-error-500
+           transition-colors"
+  />
+  <p class="text-xs text-error-600">
+    Invalid email address
+  </p>
+</div>` }</code></pre>
+					</div>
+				</div>
+				<!-- After -->
+				<div class="rounded-xl overflow-hidden border border-green-200">
+					<div class="flex items-center justify-between px-4 py-2.5 bg-green-50 border-b border-green-200">
+						<div class="flex items-center gap-2">
+							<span class="h-2 w-2 rounded-full bg-green-400"></span>
+							<span class="text-xs font-semibold text-green-700">With kraft-ui</span>
+						</div>
+						<span class="text-xs font-mono font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full">4 lines</span>
+					</div>
+					<div class="bg-[#22272e] overflow-x-auto">
+						<pre class="p-4 text-xs leading-relaxed m-0 text-[#adbac7]"><code>{ `@input.Input(input.Props{
+  Type:  "email",
+  Label: "Email",
+  Error: "Invalid email address",
+})
+
+// Typed. Consistent. IDE autocomplete.
+// One place to update when design changes.
+// Every dev on your team writes it
+// the same way.` }</code></pre>
+					</div>
+				</div>
+			</div>
+			<!-- Metrics -->
+			<div class="grid grid-cols-3 gap-4">
+				<div class="rounded-xl border border-border p-5 text-center">
+					<p class="text-3xl font-bold text-brand-500 mb-1">75%</p>
+					<p class="text-xs text-text-muted">less markup per field</p>
+				</div>
+				<div class="rounded-xl border border-border p-5 text-center">
+					<p class="text-3xl font-bold text-brand-500 mb-1">1</p>
+					<p class="text-xs text-text-muted">file to update when design changes</p>
+				</div>
+				<div class="rounded-xl border border-border p-5 text-center">
+					<p class="text-3xl font-bold text-brand-500 mb-1">0</p>
+					<p class="text-xs text-text-muted">class string debates on your team</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- DaisyUI themes -->
+		<section class="py-16 px-4 sm:px-6 max-w-5xl mx-auto">
+			<div class="text-center mb-8">
+				<h2 class="text-2xl font-bold mb-3">30+ themes. One attribute.</h2>
+				<p class="text-text-muted max-w-xl mx-auto">Set <code class="font-mono text-sm bg-surface-muted px-1.5 py-0.5 rounded border border-border">data-theme</code> on your HTML element. Every component adapts instantly. No extra code, no per-theme classes.</p>
+			</div>
+			<div class="rounded-xl border border-border overflow-hidden mb-4">
+				<div class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-border">
+					<div data-theme="light" class="p-6 flex flex-col items-center gap-3 bg-base-100">
+						<span class="text-[10px] text-base-content/40 font-mono mb-1">light</span>
+						@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeSM}) { Buy now }
+						@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeSuccess}) { Active }
+					</div>
+					<div data-theme="dark" class="p-6 flex flex-col items-center gap-3 bg-base-100">
+						<span class="text-[10px] text-base-content/40 font-mono mb-1">dark</span>
+						@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeSM}) { Buy now }
+						@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeSuccess}) { Active }
+					</div>
+					<div data-theme="cupcake" class="p-6 flex flex-col items-center gap-3 bg-base-100">
+						<span class="text-[10px] text-base-content/40 font-mono mb-1">cupcake</span>
+						@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeSM}) { Buy now }
+						@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeSuccess}) { Active }
+					</div>
+					<div data-theme="cyberpunk" class="p-6 flex flex-col items-center gap-3 bg-base-100">
+						<span class="text-[10px] text-base-content/40 font-mono mb-1">cyberpunk</span>
+						@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeSM}) { Buy now }
+						@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeSuccess}) { Active }
+					</div>
+				</div>
+			</div>
+			<div class="bg-[#22272e] rounded-xl overflow-hidden border border-white/10">
+				<pre class="p-4 text-xs text-[#adbac7] m-0 leading-relaxed"><code>{ `<html data-theme={ user.PreferredTheme }>
+  <!-- every daisyui.* component adapts automatically -->` }</code></pre>
+			</div>
+		</section>
+
 		<!-- Feature grid -->
 		<section class="py-20 px-4 sm:px-6 max-w-6xl mx-auto">
 			<h2 class="text-2xl font-bold text-center mb-3">Built different. Kraft different.</h2>
