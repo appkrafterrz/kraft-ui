@@ -1,0 +1,80 @@
+package docs
+
+import (
+	"github.com/appkrafterrz/kraft-ui/pkg/daisyui"
+	"github.com/appkrafterrz/kraft-ui/web/components"
+	"github.com/appkrafterrz/kraft-ui/web/layouts"
+)
+
+templ DaisyButtonPage() {
+	@layouts.DocsShell(layouts.Meta{Title: "DaisyUI — Button", Description: "DaisyUI button component with variants and sizes."}) {
+		<div class="mb-8">
+			<h1 class="text-3xl font-bold tracking-tight mb-3">Button <span class="text-sm font-normal text-text-muted ml-2">DaisyUI</span></h1>
+			<p class="text-text-secondary text-lg">Clickable actions using DaisyUI's semantic <code class="font-mono text-base">btn</code> class system.</p>
+		</div>
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Variants</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary}) { Primary }
+@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonSecondary}) { Secondary }
+@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonAccent}) { Accent }
+@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonGhost}) { Ghost }
+@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonOutline}) { Outline }`,
+			}},
+		}) {
+			<div class="flex flex-wrap gap-3 items-center justify-center">
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary}) { Primary }
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonSecondary}) { Secondary }
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonAccent}) { Accent }
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonGhost}) { Ghost }
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonOutline}) { Outline }
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Status colours</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonSuccess}) { Success }
+@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonWarning}) { Warning }
+@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonError}) { Error }
+@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonInfo}) { Info }`,
+			}},
+		}) {
+			<div class="flex flex-wrap gap-3 items-center justify-center">
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonSuccess}) { Success }
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonWarning}) { Warning }
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonError}) { Error }
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonInfo}) { Info }
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Sizes</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeXS}) { XS }
+@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeSM}) { SM }
+@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary}) { MD }
+@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeLG}) { LG }
+@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeXL}) { XL }`,
+			}},
+		}) {
+			<div class="flex flex-wrap gap-3 items-center justify-center">
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeXS}) { XS }
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeSM}) { SM }
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary}) { MD }
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeLG}) { LG }
+				@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeXL}) { XL }
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Props</h2>
+		@components.PropsTable([]components.PropRow{
+			{Prop: "Variant", Type: "ButtonVariant", Default: `""`, Desc: "btn-primary, btn-secondary, btn-accent, btn-ghost, btn-link, btn-outline, btn-neutral, btn-error, btn-warning, btn-success, btn-info"},
+			{Prop: "Size", Type: "ButtonSize", Default: `""`, Desc: "btn-xs, btn-sm, (default md), btn-lg, btn-xl"},
+			{Prop: "Disabled", Type: "bool", Default: "false", Desc: "Disables the button"},
+			{Prop: "Wide", Type: "bool", Default: "false", Desc: "Adds btn-wide for full-width style"},
+			{Prop: "Class", Type: "string", Default: `""`, Desc: "Extra Tailwind or DaisyUI classes"},
+			{Prop: "Attrs", Type: "templ.Attributes", Default: "nil", Desc: "Spread any HTML attribute (hx-*, data-*, etc.)"},
+		})
+	}
+}

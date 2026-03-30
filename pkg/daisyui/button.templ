@@ -1,0 +1,67 @@
+package daisyui
+
+import "strings"
+
+// ── Button ────────────────────────────────────────────────────────────────────
+
+type ButtonVariant string
+type ButtonSize string
+
+const (
+	ButtonPrimary   ButtonVariant = "btn-primary"
+	ButtonSecondary ButtonVariant = "btn-secondary"
+	ButtonAccent    ButtonVariant = "btn-accent"
+	ButtonGhost     ButtonVariant = "btn-ghost"
+	ButtonLink      ButtonVariant = "btn-link"
+	ButtonOutline   ButtonVariant = "btn-outline"
+	ButtonNeutral   ButtonVariant = "btn-neutral"
+	ButtonError     ButtonVariant = "btn-error"
+	ButtonWarning   ButtonVariant = "btn-warning"
+	ButtonSuccess   ButtonVariant = "btn-success"
+	ButtonInfo      ButtonVariant = "btn-info"
+)
+
+const (
+	ButtonSizeXS ButtonSize = "btn-xs"
+	ButtonSizeSM ButtonSize = "btn-sm"
+	ButtonSizeMD ButtonSize = ""
+	ButtonSizeLG ButtonSize = "btn-lg"
+	ButtonSizeXL ButtonSize = "btn-xl"
+)
+
+type ButtonProps struct {
+	Variant  ButtonVariant
+	Size     ButtonSize
+	Disabled bool
+	Wide     bool
+	Class    string
+	Attrs    templ.Attributes
+}
+
+func buttonClasses(p ButtonProps) string {
+	parts := []string{"btn"}
+	if p.Variant != "" {
+		parts = append(parts, string(p.Variant))
+	}
+	if p.Size != "" {
+		parts = append(parts, string(p.Size))
+	}
+	if p.Wide {
+		parts = append(parts, "btn-wide")
+	}
+	if p.Class != "" {
+		parts = append(parts, p.Class)
+	}
+	return strings.Join(parts, " ")
+}
+
+templ Button(p ButtonProps) {
+	<button
+		type="button"
+		class={ buttonClasses(p) }
+		disabled?={ p.Disabled }
+		{ p.Attrs... }
+	>
+		{ children... }
+	</button>
+}

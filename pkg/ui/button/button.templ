@@ -1,0 +1,149 @@
+package button
+
+import "strings"
+
+// ── Types ───────────────────────────────────────────────────────────────────
+
+type Variant string
+type Size string
+
+const (
+	VariantPrimary     Variant = "primary"
+	VariantSecondary   Variant = "secondary"
+	VariantOutline     Variant = "outline"
+	VariantGhost       Variant = "ghost"
+	VariantDestructive Variant = "destructive"
+	VariantLink        Variant = "link"
+)
+
+const (
+	SizeXS Size = "xs"
+	SizeSM Size = "sm"
+	SizeMD Size = "md"
+	SizeLG Size = "lg"
+	SizeXL Size = "xl"
+)
+
+// Props defines all configuration for a Button.
+// Pass hx-* and other HTML attributes via Attrs for full HTMX support.
+type Props struct {
+	Variant  Variant
+	Size     Size
+	Disabled bool
+	Type     string         // "button" | "submit" | "reset" (default: "button")
+	Class    string         // extra Tailwind classes to merge
+	Attrs    templ.Attributes // hx-post, hx-target, data-*, aria-*, etc.
+}
+
+// ── Class builder ────────────────────────────────────────────────────────────
+
+func classes(p Props) string {
+	base := "inline-flex items-center justify-center gap-2 font-medium rounded-md transition-colors " +
+		"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 " +
+		"disabled:opacity-50 disabled:pointer-events-none select-none whitespace-nowrap"
+
+	variant := map[Variant]string{
+		VariantPrimary:     "bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700 shadow-xs",
+		VariantSecondary:   "bg-surface-muted text-text-primary hover:bg-surface-subtle border border-border shadow-xs",
+		VariantOutline:     "border border-border bg-transparent text-text-primary hover:bg-surface-muted shadow-xs",
+		VariantGhost:       "bg-transparent text-text-secondary hover:bg-surface-muted hover:text-text-primary",
+		VariantDestructive: "bg-error-500 text-white hover:bg-error-700 shadow-xs",
+		VariantLink:        "bg-transparent text-brand-500 hover:text-brand-600 underline-offset-4 hover:underline p-0 h-auto",
+	}[p.Variant]
+
+	size := map[Size]string{
+		SizeXS: "h-7 px-2.5 text-xs rounded",
+		SizeSM: "h-8 px-3 text-sm",
+		SizeMD: "h-9 px-4 text-sm",
+		SizeLG: "h-10 px-5 text-base",
+		SizeXL: "h-11 px-6 text-base",
+	}[p.Size]
+
+	if p.Size == "" {
+		size = "h-9 px-4 text-sm" // default md
+	}
+	if p.Variant == "" {
+		variant = "bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700 shadow-xs" // default primary
+	}
+	if p.Variant == VariantLink {
+		size = "" // link variant ignores size padding
+	}
+
+	parts := []string{base, variant, size}
+	if p.Class != "" {
+		parts = append(parts, p.Class)
+	}
+	return strings.Join(parts, " ")
+}
+
+func btnType(p Props) string {
+	if p.Type != "" {
+		return p.Type
+	}
+	return "button"
+}
+
+// ── Components ───────────────────────────────────────────────────────────────
+
+// Button renders a styled, accessible button.
+//
+// Usage:
+//
+//	@button.Button(button.Props{Variant: button.VariantPrimary}) {
+//	    Click me
+//	}
+//
+//	// With HTMX:
+//	@button.Button(button.Props{
+//	    Variant: button.VariantSecondary,
+//	    Attrs: templ.Attributes{
+//	        "hx-post":   "/api/submit",
+//	        "hx-target": "#result",
+//	    },
+//	}) {
+//	    Submit
+//	}
+templ Button(p Props) {
+	<button
+		type={ btnType(p) }
+		class={ classes(p) }
+		disabled?={ p.Disabled }
+		{ p.Attrs... }
+	>
+		{ children... }
+	</button>
+}
+
+// ButtonIcon renders a square icon-only button.
+templ ButtonIcon(p Props) {
+	<button
+		type={ btnType(p) }
+		class={ classes(p) + " aspect-square px-0 w-9" }
+		disabled?={ p.Disabled }
+		{ p.Attrs... }
+	>
+		{ children... }
+	</button>
+}
+
+// ButtonLoading renders a button with a spinner, useful during HTMX requests.
+// Pair with hx-indicator for automatic show/hide.
+templ ButtonLoading(p Props, label string) {
+	<button
+		type={ btnType(p) }
+		class={ classes(p) }
+		disabled
+		{ p.Attrs... }
+	>
+		<svg
+			class="animate-spin -ml-1 h-4 w-4"
+			xmlns="http://www.w3.org/2000/svg"
+			fill="none"
+			viewBox="0 0 24 24"
+		>
+			<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+			<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+		</svg>
+		{ label }
+	</button>
+}

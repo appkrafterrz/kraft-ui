@@ -1,0 +1,335 @@
+package pages
+
+import (
+	"fmt"
+	"strconv"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/alert"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/avatar"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/badge"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/button"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/card"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/input"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/progress"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/spinner"
+	"github.com/appkrafterrz/kraft-ui/pkg/daisyui"
+)
+
+// ── Param helpers ─────────────────────────────────────────────────────────────
+
+func getParam(params map[string]string, key, def string) string {
+	if v, ok := params[key]; ok && v != "" {
+		return v
+	}
+	return def
+}
+
+func boolParam(params map[string]string, key string) bool {
+	return params[key] == "true"
+}
+
+func intParam(params map[string]string, key string, def int) int {
+	if v, ok := params[key]; ok {
+		if i, err := strconv.Atoi(v); err == nil {
+			return i
+		}
+	}
+	return def
+}
+
+// ── REPL root ─────────────────────────────────────────────────────────────────
+
+// PlaygroundREPL renders the full REPL panel: live preview + prop controls.
+templ PlaygroundREPL(id string, params map[string]string) {
+	<div class="h-full flex flex-col overflow-hidden">
+		<!-- Live preview (inherits data-theme from #preview-area via parent) -->
+		<div class="flex-1 min-h-0 bg-[radial-gradient(circle,_oklch(92%_0_0)_1px,_transparent_1px)] bg-[size:20px_20px] flex items-center justify-center overflow-auto p-10">
+			<div id="live-preview" class="flex items-center justify-center">
+				@replLive(id, params)
+			</div>
+		</div>
+		<!-- Controls (always light — isolated from theme switcher) -->
+		<div class="flex-shrink-0 border-t border-border bg-surface overflow-y-auto" style="max-height:280px" data-theme="light">
+			<div class="px-6 py-4">
+				<p class="text-[10px] font-semibold uppercase tracking-wider text-text-muted mb-4">Props</p>
+				<form
+					hx-get={ "/playground/component/" + id }
+					hx-trigger="change, input delay:500ms"
+					hx-target="#live-preview"
+					hx-swap="innerHTML show:no-scroll"
+					hx-include="this"
+					onsubmit="return false"
+					class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-5 gap-y-4 items-end"
+				>
+					@replControls(id, params)
+				</form>
+			</div>
+		</div>
+	</div>
+}
+
+// PlaygroundLiveComponent renders just the component (HTMX partial update target).
+templ PlaygroundLiveComponent(id string, params map[string]string) {
+	@replLive(id, params)
+}
+
+// ── Live component dispatcher ─────────────────────────────────────────────────
+
+templ replLive(id string, params map[string]string) {
+	switch id {
+		case "button":
+			@button.Button(button.Props{
+				Variant:  button.Variant(getParam(params, "variant", "primary")),
+				Size:     button.Size(getParam(params, "size", "md")),
+				Disabled: boolParam(params, "disabled"),
+			}) {
+				{ getParam(params, "label", "Click me") }
+			}
+		case "badge":
+			@badge.Badge(badge.Props{
+				Variant: badge.Variant(getParam(params, "variant", "default")),
+				Dot:     boolParam(params, "dot"),
+			}) {
+				{ getParam(params, "label", "Badge") }
+			}
+		case "alert":
+			<div class="w-80">
+				@alert.Alert(alert.Props{
+					Variant:     alert.Variant(getParam(params, "variant", "info")),
+					Title:       getParam(params, "title", "Alert"),
+					Dismissible: boolParam(params, "dismissible"),
+				}) {
+					{ getParam(params, "message", "This is an alert message.") }
+				}
+			</div>
+		case "card":
+			<div class="w-80">
+				@card.Card(card.Props{Shadow: true, Border: true}) {
+					@card.Header() {
+						@card.Title() { { getParam(params, "title", "Card Title") } }
+						@card.Description() { { getParam(params, "description", "A short description.") } }
+					}
+					@card.Body() {
+						<p class="text-sm text-text-secondary">{ getParam(params, "body", "Card body content goes here.") }</p>
+					}
+					@card.Footer() {
+						@button.Button(button.Props{Variant: button.VariantPrimary, Size: button.SizeSM}) { Save }
+						@button.Button(button.Props{Variant: button.VariantOutline, Size: button.SizeSM}) { Cancel }
+					}
+				}
+			</div>
+		case "input":
+			<div class="w-72">
+				@input.Input(input.Props{
+					Type:        input.Type(getParam(params, "type", "text")),
+					Label:       getParam(params, "label", "Label"),
+					Placeholder: getParam(params, "placeholder", "Enter text..."),
+					Disabled:    boolParam(params, "disabled"),
+					Error:       getParam(params, "error", ""),
+					Helper:      getParam(params, "helper", ""),
+				})
+			</div>
+		case "avatar":
+			@avatar.Avatar(avatar.Props{
+				Name: getParam(params, "name", "Jane Doe"),
+				Size: avatar.Size(getParam(params, "size", "lg")),
+			})
+		case "spinner":
+			@spinner.Spinner(spinner.Props{
+				Size:    spinner.Size(getParam(params, "size", "md")),
+				Variant: spinner.Variant(getParam(params, "variant", "brand")),
+			})
+		case "progress":
+			<div class="w-72">
+				@progress.Progress(progress.Props{
+					Value:   intParam(params, "value", 65),
+					Variant: progress.Variant(getParam(params, "variant", "default")),
+					Size:    progress.Size(getParam(params, "size", "md")),
+					ShowPct: true,
+				})
+			</div>
+		case "daisy-button":
+			@daisyui.Button(daisyui.ButtonProps{
+				Variant:  daisyui.ButtonVariant(getParam(params, "variant", "btn-primary")),
+				Size:     daisyui.ButtonSize(getParam(params, "size", "")),
+				Disabled: boolParam(params, "disabled"),
+				Wide:     boolParam(params, "wide"),
+			}) {
+				{ getParam(params, "label", "Button") }
+			}
+		case "daisy-badge":
+			@daisyui.Badge(daisyui.BadgeProps{
+				Variant: daisyui.BadgeVariant(getParam(params, "variant", "badge-primary")),
+				Size:    daisyui.BadgeSize(getParam(params, "size", "")),
+			}) {
+				{ getParam(params, "label", "Badge") }
+			}
+		case "daisy-alert":
+			<div class="w-80">
+				@daisyui.Alert(daisyui.AlertProps{
+					Variant: daisyui.AlertVariant(getParam(params, "variant", "alert-info")),
+				}) {
+					<span>{ getParam(params, "message", "This is an informational alert.") }</span>
+				}
+			</div>
+		case "daisy-card":
+			<div class="w-72">
+				@daisyui.Card(daisyui.CardProps{
+					Bordered: boolParam(params, "bordered"),
+					Compact:  boolParam(params, "compact"),
+				}) {
+					@daisyui.CardBody() {
+						@daisyui.CardTitle() { { getParam(params, "title", "Card Title") } }
+						<p class="text-sm">{ getParam(params, "body", "DaisyUI themed card.") }</p>
+						@daisyui.CardActions() {
+							@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary}) { Buy Now }
+						}
+					}
+				}
+			</div>
+		case "daisy-input":
+			<div class="w-72">
+				@daisyui.Input(daisyui.InputProps{
+					Variant:     daisyui.InputVariant(getParam(params, "variant", "")),
+					Size:        daisyui.InputSize(getParam(params, "size", "")),
+					Placeholder: getParam(params, "placeholder", "Type here..."),
+					Disabled:    boolParam(params, "disabled"),
+					Label:       getParam(params, "label", "Label"),
+				})
+			</div>
+		default:
+			<p class="text-sm text-text-muted">Unknown: { id }</p>
+	}
+}
+
+// ── Controls dispatcher ───────────────────────────────────────────────────────
+
+templ replControls(id string, params map[string]string) {
+	switch id {
+		case "button":
+			@ctrlSelect("variant", "Variant", []string{"primary", "secondary", "outline", "ghost", "destructive", "link"}, getParam(params, "variant", "primary"))
+			@ctrlSelect("size", "Size", []string{"xs", "sm", "md", "lg", "xl"}, getParam(params, "size", "md"))
+			@ctrlText("label", "Label", getParam(params, "label", "Click me"))
+			@ctrlCheckbox("disabled", "Disabled", boolParam(params, "disabled"))
+		case "badge":
+			@ctrlSelect("variant", "Variant", []string{"default", "secondary", "success", "warning", "destructive", "info", "outline"}, getParam(params, "variant", "default"))
+			@ctrlText("label", "Label", getParam(params, "label", "Badge"))
+			@ctrlCheckbox("dot", "Show dot", boolParam(params, "dot"))
+		case "alert":
+			@ctrlSelect("variant", "Variant", []string{"info", "success", "warning", "destructive"}, getParam(params, "variant", "info"))
+			@ctrlText("title", "Title", getParam(params, "title", "Alert"))
+			@ctrlText("message", "Message", getParam(params, "message", "This is an alert message."))
+			@ctrlCheckbox("dismissible", "Dismissible", boolParam(params, "dismissible"))
+		case "card":
+			@ctrlText("title", "Title", getParam(params, "title", "Card Title"))
+			@ctrlText("description", "Description", getParam(params, "description", "A short description."))
+			@ctrlText("body", "Body text", getParam(params, "body", "Card body content goes here."))
+		case "input":
+			@ctrlSelect("type", "Type", []string{"text", "email", "password", "search", "number", "tel"}, getParam(params, "type", "text"))
+			@ctrlText("label", "Label", getParam(params, "label", "Label"))
+			@ctrlText("placeholder", "Placeholder", getParam(params, "placeholder", "Enter text..."))
+			@ctrlText("error", "Error", getParam(params, "error", ""))
+			@ctrlText("helper", "Helper", getParam(params, "helper", ""))
+			@ctrlCheckbox("disabled", "Disabled", boolParam(params, "disabled"))
+		case "avatar":
+			@ctrlText("name", "Name", getParam(params, "name", "Jane Doe"))
+			@ctrlSelect("size", "Size", []string{"xs", "sm", "md", "lg", "xl", "2xl"}, getParam(params, "size", "lg"))
+		case "spinner":
+			@ctrlSelect("size", "Size", []string{"xs", "sm", "md", "lg", "xl"}, getParam(params, "size", "md"))
+			@ctrlSelect("variant", "Color", []string{"brand", "muted"}, getParam(params, "variant", "brand"))
+		case "progress":
+			@ctrlRange("value", "Value", 0, 100, intParam(params, "value", 65))
+			@ctrlSelect("variant", "Variant", []string{"default", "success", "warning", "error"}, getParam(params, "variant", "default"))
+			@ctrlSelect("size", "Size", []string{"sm", "md", "lg"}, getParam(params, "size", "md"))
+		case "daisy-button":
+			@ctrlSelect("variant", "Variant", []string{"btn-primary", "btn-secondary", "btn-accent", "btn-neutral", "btn-ghost", "btn-link", "btn-error", "btn-warning", "btn-success", "btn-info"}, getParam(params, "variant", "btn-primary"))
+			@ctrlSelect("size", "Size", []string{"", "btn-xs", "btn-sm", "btn-lg", "btn-xl"}, getParam(params, "size", ""))
+			@ctrlText("label", "Label", getParam(params, "label", "Button"))
+			@ctrlCheckbox("disabled", "Disabled", boolParam(params, "disabled"))
+			@ctrlCheckbox("wide", "Wide", boolParam(params, "wide"))
+		case "daisy-badge":
+			@ctrlSelect("variant", "Variant", []string{"badge-primary", "badge-secondary", "badge-accent", "badge-neutral", "badge-ghost", "badge-outline", "badge-error", "badge-warning", "badge-success", "badge-info"}, getParam(params, "variant", "badge-primary"))
+			@ctrlSelect("size", "Size", []string{"", "badge-xs", "badge-sm", "badge-lg", "badge-xl"}, getParam(params, "size", ""))
+			@ctrlText("label", "Label", getParam(params, "label", "Badge"))
+		case "daisy-alert":
+			@ctrlSelect("variant", "Variant", []string{"alert-info", "alert-success", "alert-warning", "alert-error"}, getParam(params, "variant", "alert-info"))
+			@ctrlText("message", "Message", getParam(params, "message", "This is an informational alert."))
+		case "daisy-card":
+			@ctrlText("title", "Title", getParam(params, "title", "Card Title"))
+			@ctrlText("body", "Body text", getParam(params, "body", "DaisyUI themed card."))
+			@ctrlCheckbox("bordered", "Bordered", boolParam(params, "bordered"))
+			@ctrlCheckbox("compact", "Compact", boolParam(params, "compact"))
+		case "daisy-input":
+			@ctrlSelect("variant", "Variant", []string{"", "input-primary", "input-secondary", "input-accent", "input-error", "input-warning", "input-success", "input-info"}, getParam(params, "variant", ""))
+			@ctrlSelect("size", "Size", []string{"", "input-xs", "input-sm", "input-lg", "input-xl"}, getParam(params, "size", ""))
+			@ctrlText("label", "Label", getParam(params, "label", "Label"))
+			@ctrlText("placeholder", "Placeholder", getParam(params, "placeholder", "Type here..."))
+			@ctrlCheckbox("disabled", "Disabled", boolParam(params, "disabled"))
+		default:
+			<p class="text-xs text-text-muted">No controls available.</p>
+	}
+}
+
+// ── Control widgets ───────────────────────────────────────────────────────────
+
+templ ctrlSelect(name, label string, options []string, current string) {
+	<div class="flex flex-col gap-1">
+		<label class="text-xs text-text-muted">{ label }</label>
+		<select
+			name={ name }
+			class="w-full rounded border border-border px-2 py-1.5 text-xs bg-surface text-text-primary focus:outline-none focus:ring-1 focus:ring-brand-500"
+		>
+			for _, opt := range options {
+				<option value={ opt } selected?={ opt == current }>
+					if opt == "" {
+						default
+					} else {
+						{ opt }
+					}
+				</option>
+			}
+		</select>
+	</div>
+}
+
+templ ctrlCheckbox(name, label string, checked bool) {
+	<label class="flex items-center gap-1.5 cursor-pointer self-end pb-2">
+		<input
+			type="checkbox"
+			name={ name }
+			value="true"
+			checked?={ checked }
+			class="rounded border-border accent-brand-500"
+		/>
+		<span class="text-xs text-text-secondary">{ label }</span>
+	</label>
+}
+
+templ ctrlText(name, label, value string) {
+	<div class="flex flex-col gap-1">
+		<label class="text-xs text-text-muted">{ label }</label>
+		<input
+			type="text"
+			name={ name }
+			value={ value }
+			class="w-full rounded border border-border px-2 py-1.5 text-xs bg-surface text-text-primary focus:outline-none focus:ring-1 focus:ring-brand-500"
+		/>
+	</div>
+}
+
+templ ctrlRange(name, label string, min, max, value int) {
+	<div class="flex flex-col gap-1 col-span-2" x-data={ fmt.Sprintf(`{ val: %d }`, value) }>
+		<label class="text-xs text-text-muted">
+			{ label }
+			<span x-text="val" class="font-semibold text-text-primary ml-1"></span>
+		</label>
+		<input
+			type="range"
+			name={ name }
+			min={ fmt.Sprint(min) }
+			max={ fmt.Sprint(max) }
+			value={ fmt.Sprint(value) }
+			x-model.number="val"
+			class="w-full accent-brand-500"
+		/>
+	</div>
+}

@@ -1,0 +1,19 @@
+# Binaries
+bin/
+/server
+tmp/
+
+# Node
+node_modules/
+package-lock.json
+
+# Editor / tooling
+.claude/
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build output (keep web/static/css/styles.css and web/static/js/ committed
+# so the docs site works without a local build step)

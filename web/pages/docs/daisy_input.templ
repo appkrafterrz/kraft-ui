@@ -1,0 +1,100 @@
+package docs
+
+import (
+	"github.com/appkrafterrz/kraft-ui/pkg/daisyui"
+	"github.com/appkrafterrz/kraft-ui/web/components"
+	"github.com/appkrafterrz/kraft-ui/web/layouts"
+)
+
+templ DaisyInputPage() {
+	@layouts.DocsShell(layouts.Meta{Title: "DaisyUI — Input", Description: "DaisyUI input component with labels and validation states."}) {
+		<div class="mb-8">
+			<h1 class="text-3xl font-bold tracking-tight mb-3">Input <span class="text-sm font-normal text-text-muted ml-2">DaisyUI</span></h1>
+			<p class="text-text-secondary text-lg">Text fields using DaisyUI's <code class="font-mono text-base">input</code> and <code class="font-mono text-base">fieldset</code> classes.</p>
+		</div>
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Default</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Input(daisyui.InputProps{
+    Label:       "Email",
+    Type:        "email",
+    Placeholder: "you@example.com",
+})`,
+			}},
+		}) {
+			<div class="w-72">
+				@daisyui.Input(daisyui.InputProps{
+					Label:       "Email",
+					Type:        "email",
+					Placeholder: "you@example.com",
+				})
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Variants</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Input(daisyui.InputProps{Label: "Primary", Variant: daisyui.InputPrimary, Placeholder: "input-primary"})
+@daisyui.Input(daisyui.InputProps{Label: "Success", Variant: daisyui.InputSuccess, Placeholder: "input-success"})
+@daisyui.Input(daisyui.InputProps{Label: "Warning", Variant: daisyui.InputWarning, Placeholder: "input-warning"})`,
+			}},
+		}) {
+			<div class="flex flex-col gap-4 w-72">
+				@daisyui.Input(daisyui.InputProps{Label: "Primary", Variant: daisyui.InputPrimary, Placeholder: "input-primary"})
+				@daisyui.Input(daisyui.InputProps{Label: "Success", Variant: daisyui.InputSuccess, Placeholder: "input-success"})
+				@daisyui.Input(daisyui.InputProps{Label: "Warning", Variant: daisyui.InputWarning, Placeholder: "input-warning"})
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Error state</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Input(daisyui.InputProps{
+    Label: "Email",
+    Type:  "email",
+    Error: "Please enter a valid email address.",
+})`,
+			}},
+		}) {
+			<div class="w-72">
+				@daisyui.Input(daisyui.InputProps{
+					Label: "Email",
+					Type:  "email",
+					Error: "Please enter a valid email address.",
+				})
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Sizes</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Input(daisyui.InputProps{Placeholder: "XS", Size: daisyui.InputSizeXS})
+@daisyui.Input(daisyui.InputProps{Placeholder: "SM", Size: daisyui.InputSizeSM})
+@daisyui.Input(daisyui.InputProps{Placeholder: "MD (default)"})
+@daisyui.Input(daisyui.InputProps{Placeholder: "LG", Size: daisyui.InputSizeLG})`,
+			}},
+		}) {
+			<div class="flex flex-col gap-3 w-72">
+				@daisyui.Input(daisyui.InputProps{Placeholder: "XS", Size: daisyui.InputSizeXS})
+				@daisyui.Input(daisyui.InputProps{Placeholder: "SM", Size: daisyui.InputSizeSM})
+				@daisyui.Input(daisyui.InputProps{Placeholder: "MD (default)"})
+				@daisyui.Input(daisyui.InputProps{Placeholder: "LG", Size: daisyui.InputSizeLG})
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Props</h2>
+		@components.PropsTable([]components.PropRow{
+			{Prop: "Label", Type: "string", Default: `""`, Desc: "Label text above the input"},
+			{Prop: "Type", Type: "string", Default: `"text"`, Desc: "HTML input type"},
+			{Prop: "Placeholder", Type: "string", Default: `""`, Desc: "Placeholder text"},
+			{Prop: "Value", Type: "string", Default: `""`, Desc: "Initial value"},
+			{Prop: "Variant", Type: "InputVariant", Default: `""`, Desc: "input-primary, input-secondary, input-accent, input-error, input-warning, input-success, input-info"},
+			{Prop: "Size", Type: "InputSize", Default: `""`, Desc: "input-xs, input-sm, (default md), input-lg, input-xl"},
+			{Prop: "Error", Type: "string", Default: `""`, Desc: "Error message — also applies input-error styling"},
+			{Prop: "Helper", Type: "string", Default: `""`, Desc: "Helper text below the input (shown when no error)"},
+			{Prop: "Required", Type: "bool", Default: "false", Desc: "Marks field as required with * indicator"},
+			{Prop: "Disabled", Type: "bool", Default: "false", Desc: "Disables the input"},
+			{Prop: "Attrs", Type: "templ.Attributes", Default: "nil", Desc: "Spread any HTML attribute"},
+		})
+	}
+}

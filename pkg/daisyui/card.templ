@@ -1,0 +1,43 @@
+package daisyui
+
+// ── Card ──────────────────────────────────────────────────────────────────────
+
+type CardProps struct {
+	Title   string
+	Compact bool
+	Bordered bool
+	Class   string
+	Attrs   templ.Attributes
+}
+
+templ Card(p CardProps) {
+	<div
+		class={
+			"card bg-base-100",
+			templ.KV("card-compact", p.Compact),
+			templ.KV("card-bordered border border-base-300", p.Bordered),
+			p.Class,
+		}
+		{ p.Attrs... }
+	>
+		{ children... }
+	</div>
+}
+
+templ CardBody() {
+	<div class="card-body">
+		{ children... }
+	</div>
+}
+
+templ CardTitle() {
+	<h2 class="card-title">
+		{ children... }
+	</h2>
+}
+
+templ CardActions() {
+	<div class="card-actions justify-end">
+		{ children... }
+	</div>
+}

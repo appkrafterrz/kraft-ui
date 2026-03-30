@@ -1,0 +1,37 @@
+package daisyui
+
+import "strings"
+
+// ── Alert ─────────────────────────────────────────────────────────────────────
+
+type AlertVariant string
+
+const (
+	AlertInfo    AlertVariant = "alert-info"
+	AlertSuccess AlertVariant = "alert-success"
+	AlertWarning AlertVariant = "alert-warning"
+	AlertError   AlertVariant = "alert-error"
+)
+
+type AlertProps struct {
+	Variant AlertVariant
+	Class   string
+	Attrs   templ.Attributes
+}
+
+func alertClasses(p AlertProps) string {
+	parts := []string{"alert"}
+	if p.Variant != "" {
+		parts = append(parts, string(p.Variant))
+	}
+	if p.Class != "" {
+		parts = append(parts, p.Class)
+	}
+	return strings.Join(parts, " ")
+}
+
+templ Alert(p AlertProps) {
+	<div role="alert" class={ alertClasses(p) } { p.Attrs... }>
+		{ children... }
+	</div>
+}

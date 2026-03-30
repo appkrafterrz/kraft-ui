@@ -1,0 +1,80 @@
+package docs
+
+import (
+	"github.com/appkrafterrz/kraft-ui/pkg/daisyui"
+	"github.com/appkrafterrz/kraft-ui/web/components"
+	"github.com/appkrafterrz/kraft-ui/web/layouts"
+)
+
+templ DaisyBadgePage() {
+	@layouts.DocsShell(layouts.Meta{Title: "DaisyUI — Badge", Description: "DaisyUI badge component for labels and status indicators."}) {
+		<div class="mb-8">
+			<h1 class="text-3xl font-bold tracking-tight mb-3">Badge <span class="text-sm font-normal text-text-muted ml-2">DaisyUI</span></h1>
+			<p class="text-text-secondary text-lg">Inline labels and status indicators using DaisyUI's <code class="font-mono text-base">badge</code> class.</p>
+		</div>
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Variants</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary}) { Primary }
+@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeSecondary}) { Secondary }
+@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeAccent}) { Accent }
+@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeNeutral}) { Neutral }
+@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeOutline}) { Outline }
+@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeGhost}) { Ghost }`,
+			}},
+		}) {
+			<div class="flex flex-wrap gap-2 items-center justify-center">
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary}) { Primary }
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeSecondary}) { Secondary }
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeAccent}) { Accent }
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeNeutral}) { Neutral }
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeOutline}) { Outline }
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeGhost}) { Ghost }
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Status colours</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeSuccess}) { Success }
+@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeWarning}) { Warning }
+@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeError}) { Error }
+@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeInfo}) { Info }`,
+			}},
+		}) {
+			<div class="flex flex-wrap gap-2 items-center justify-center">
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeSuccess}) { Success }
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeWarning}) { Warning }
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeError}) { Error }
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeInfo}) { Info }
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Sizes</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary, Size: daisyui.BadgeSizeXS}) { XS }
+@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary, Size: daisyui.BadgeSizeSM}) { SM }
+@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary}) { MD }
+@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary, Size: daisyui.BadgeSizeLG}) { LG }
+@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary, Size: daisyui.BadgeSizeXL}) { XL }`,
+			}},
+		}) {
+			<div class="flex flex-wrap gap-2 items-center justify-center">
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary, Size: daisyui.BadgeSizeXS}) { XS }
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary, Size: daisyui.BadgeSizeSM}) { SM }
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary}) { MD }
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary, Size: daisyui.BadgeSizeLG}) { LG }
+				@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary, Size: daisyui.BadgeSizeXL}) { XL }
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Props</h2>
+		@components.PropsTable([]components.PropRow{
+			{Prop: "Variant", Type: "BadgeVariant", Default: `""`, Desc: "badge-primary, badge-secondary, badge-accent, badge-neutral, badge-ghost, badge-outline, badge-error, badge-warning, badge-success, badge-info"},
+			{Prop: "Size", Type: "BadgeSize", Default: `""`, Desc: "badge-xs, badge-sm, (default md), badge-lg, badge-xl"},
+			{Prop: "Class", Type: "string", Default: `""`, Desc: "Extra classes"},
+			{Prop: "Attrs", Type: "templ.Attributes", Default: "nil", Desc: "Spread any HTML attribute"},
+		})
+	}
+}

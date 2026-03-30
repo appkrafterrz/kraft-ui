@@ -1,0 +1,76 @@
+package docs
+
+import (
+	"github.com/appkrafterrz/kraft-ui/pkg/daisyui"
+	"github.com/appkrafterrz/kraft-ui/web/components"
+	"github.com/appkrafterrz/kraft-ui/web/layouts"
+)
+
+templ DaisyAlertPage() {
+	@layouts.DocsShell(layouts.Meta{Title: "DaisyUI — Alert", Description: "DaisyUI alert component for feedback messages."}) {
+		<div class="mb-8">
+			<h1 class="text-3xl font-bold tracking-tight mb-3">Alert <span class="text-sm font-normal text-text-muted ml-2">DaisyUI</span></h1>
+			<p class="text-text-secondary text-lg">Feedback banners using DaisyUI's <code class="font-mono text-base">alert</code> class.</p>
+		</div>
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Variants</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertInfo}) {
+    <span>Info — something you should know.</span>
+}
+@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertSuccess}) {
+    <span>Success — action completed.</span>
+}
+@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertWarning}) {
+    <span>Warning — proceed with care.</span>
+}
+@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertError}) {
+    <span>Error — something went wrong.</span>
+}`,
+			}},
+		}) {
+			<div class="flex flex-col gap-3 w-full max-w-lg">
+				@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertInfo}) {
+					<span>Info — something you should know.</span>
+				}
+				@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertSuccess}) {
+					<span>Success — action completed.</span>
+				}
+				@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertWarning}) {
+					<span>Warning — proceed with care.</span>
+				}
+				@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertError}) {
+					<span>Error — something went wrong.</span>
+				}
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">With icon</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertSuccess}) {
+    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <span>Your profile has been saved.</span>
+}`,
+			}},
+		}) {
+			<div class="w-full max-w-lg">
+				@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertSuccess}) {
+					<svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+					</svg>
+					<span>Your profile has been saved.</span>
+				}
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Props</h2>
+		@components.PropsTable([]components.PropRow{
+			{Prop: "Variant", Type: "AlertVariant", Default: `""`, Desc: "alert-info, alert-success, alert-warning, alert-error"},
+			{Prop: "Class", Type: "string", Default: `""`, Desc: "Extra classes"},
+			{Prop: "Attrs", Type: "templ.Attributes", Default: "nil", Desc: "Spread any HTML attribute"},
+		})
+	}
+}

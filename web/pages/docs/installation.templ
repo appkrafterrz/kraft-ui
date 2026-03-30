@@ -1,0 +1,106 @@
+package docs
+
+import (
+	"github.com/appkrafterrz/kraft-ui/web/components"
+	"github.com/appkrafterrz/kraft-ui/web/layouts"
+)
+
+templ InstallationPage() {
+	@layouts.DocsShell(layouts.Meta{Title: "Installation", Description: "Get kraft-ui running in your Go project."}) {
+		<div class="mb-8">
+			<h1 class="text-3xl font-bold tracking-tight mb-3">Installation</h1>
+			<p class="text-text-secondary text-lg">
+				Get kraft-ui into your project in under 5 minutes.
+				Choose between a Go module dependency or copy-paste ownership.
+			</p>
+		</div>
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Prerequisites</h2>
+		<ul class="space-y-2 text-text-secondary">
+			<li class="flex items-center gap-2"><span class="text-brand-500">→</span> Go 1.22 or later</li>
+			<li class="flex items-center gap-2"><span class="text-brand-500">→</span> <a class="text-brand-500 hover:underline" href="https://templ.guide" target="_blank">templ</a> v0.2.x installed (<code class="font-mono text-xs">go install github.com/a-h/templ/cmd/templ@latest</code>)</li>
+			<li class="flex items-center gap-2"><span class="text-brand-500">→</span> Node.js 18+ (for Tailwind CSS)</li>
+		</ul>
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Option A — Go module (import)</h2>
+		<p class="text-text-secondary mb-4">Use kraft-ui as a Go dependency. Best for getting started fast.</p>
+		@components.CodeBlock(components.CodeBlockProps{Language: "bash", Code: `go get github.com/appkrafterrz/kraft-ui@latest`})
+		<p class="text-text-secondary mt-4 mb-3">Then import and use:</p>
+		@components.CodeBlock(components.CodeBlockProps{
+			Title:    "page.templ",
+			Language: "go",
+			Code: `package pages
+
+import "github.com/appkrafterrz/kraft-ui/pkg/ui/button"
+
+templ MyPage() {
+    @button.Button(button.Props{Variant: button.VariantPrimary}) {
+        Hello, GOTH stack
+    }
+}`,
+		})
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Option B — Copy-paste (shadcn style)</h2>
+		<p class="text-text-secondary mb-4">
+			Copy individual component files into <code class="font-mono text-xs">your-project/web/components/ui/</code>.
+			You own the code — modify freely.
+		</p>
+		@components.CodeBlock(components.CodeBlockProps{
+			Language: "bash",
+			Code: `# Copy a single component into your project
+curl -o web/components/ui/button.templ \
+  https://raw.githubusercontent.com/appkrafterrz/kraft-ui/main/pkg/ui/button/button.templ`,
+		})
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Tailwind CSS Setup</h2>
+		<p class="text-text-secondary mb-3">kraft-ui uses Tailwind CSS v4. Add to your project:</p>
+		@components.CodeBlock(components.CodeBlockProps{Language: "bash", Code: `npm install @tailwindcss/cli tailwindcss`})
+		<p class="text-text-secondary mt-4 mb-3">Create <code class="font-mono text-xs">tailwind.css</code> at your project root:</p>
+		@components.CodeBlock(components.CodeBlockProps{
+			Title:    "tailwind.css",
+			Language: "css",
+			Code: `@import "tailwindcss";
+
+@theme {
+  --color-brand-500: oklch(55% 0.185 260); /* your brand color */
+  /* see /docs/theming for the full token catalog */
+}`,
+		})
+		<p class="text-text-secondary mt-4 mb-3">Build CSS:</p>
+		@components.CodeBlock(components.CodeBlockProps{
+			Language: "bash",
+			Code: `# Watch (dev)
+npx @tailwindcss/cli -i ./tailwind.css -o ./web/static/css/styles.css --watch
+
+# Build (prod)
+npx @tailwindcss/cli -i ./tailwind.css -o ./web/static/css/styles.css --minify`,
+		})
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Add to Base Layout</h2>
+		@components.CodeBlock(components.CodeBlockProps{
+			Title:    "layouts/base.templ",
+			Language: "go",
+			Code: `templ Base() {
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <link rel="stylesheet" href="/static/css/styles.css"/>
+        <!-- HTMX -->
+        <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+        <!-- Alpine.js Focus plugin (needed for modals) -->
+        <script src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js" defer></script>
+        <!-- Alpine.js -->
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+        <!-- kraft.js (modal store, toast store, HTMX config) -->
+        <script src="/static/js/kraft.js"></script>
+    </head>
+    <body>
+        { children... }
+        <!-- Toast region — required for toast.Toast() OOB swaps -->
+        <div id="toast-region" aria-live="polite"
+             class="fixed bottom-0 right-0 z-[100] p-4 pointer-events-none flex flex-col gap-2 max-w-sm w-full">
+        </div>
+    </body>
+    </html>
+}`,
+		})
+		<div class="mt-8 p-4 rounded-lg bg-success-50 border border-success-500/30 text-success-700 text-sm">
+			<strong>You're ready.</strong> Head to <a href="/docs/components/button" class="underline font-medium">Button</a> to start building.
+		</div>
+	}
+}

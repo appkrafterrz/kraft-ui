@@ -1,0 +1,56 @@
+package daisyui
+
+import "strings"
+
+// ── Badge ─────────────────────────────────────────────────────────────────────
+
+type BadgeVariant string
+type BadgeSize string
+
+const (
+	BadgePrimary   BadgeVariant = "badge-primary"
+	BadgeSecondary BadgeVariant = "badge-secondary"
+	BadgeAccent    BadgeVariant = "badge-accent"
+	BadgeNeutral   BadgeVariant = "badge-neutral"
+	BadgeGhost     BadgeVariant = "badge-ghost"
+	BadgeOutline   BadgeVariant = "badge-outline"
+	BadgeError     BadgeVariant = "badge-error"
+	BadgeWarning   BadgeVariant = "badge-warning"
+	BadgeSuccess   BadgeVariant = "badge-success"
+	BadgeInfo      BadgeVariant = "badge-info"
+)
+
+const (
+	BadgeSizeXS BadgeSize = "badge-xs"
+	BadgeSizeSM BadgeSize = "badge-sm"
+	BadgeSizeMD BadgeSize = ""
+	BadgeSizeLG BadgeSize = "badge-lg"
+	BadgeSizeXL BadgeSize = "badge-xl"
+)
+
+type BadgeProps struct {
+	Variant BadgeVariant
+	Size    BadgeSize
+	Class   string
+	Attrs   templ.Attributes
+}
+
+func badgeClasses(p BadgeProps) string {
+	parts := []string{"badge"}
+	if p.Variant != "" {
+		parts = append(parts, string(p.Variant))
+	}
+	if p.Size != "" {
+		parts = append(parts, string(p.Size))
+	}
+	if p.Class != "" {
+		parts = append(parts, p.Class)
+	}
+	return strings.Join(parts, " ")
+}
+
+templ Badge(p BadgeProps) {
+	<span class={ badgeClasses(p) } { p.Attrs... }>
+		{ children... }
+	</span>
+}

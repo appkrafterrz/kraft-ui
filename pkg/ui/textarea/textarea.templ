@@ -1,0 +1,112 @@
+package textarea
+
+import "fmt"
+
+// ── Types ────────────────────────────────────────────────────────────────────
+
+type Props struct {
+	ID          string
+	Name        string
+	Value       string
+	Placeholder string
+	Label       string
+	Helper      string
+	Error       string
+	Rows        int
+	Required    bool
+	Disabled    bool
+	Readonly    bool
+	Resize      bool // allow manual resize (default: false — vertical only)
+	Class       string
+	Attrs       templ.Attributes
+}
+
+func fieldClasses(p Props) string {
+	base := "w-full rounded-md border bg-surface px-3 py-2 text-sm text-text-primary placeholder:text-text-muted " +
+		"transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-0 " +
+		"disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-muted"
+
+	resize := "resize-none"
+	if p.Resize {
+		resize = "resize-y"
+	}
+
+	if p.Error != "" {
+		base += " border-error-500 focus-visible:ring-error-500"
+	} else {
+		base += " border-border focus-visible:ring-brand-500"
+	}
+
+	if p.Class != "" {
+		return base + " " + resize + " " + p.Class
+	}
+	return base + " " + resize
+}
+
+func labelID(p Props) string {
+	if p.ID != "" {
+		return p.ID
+	}
+	return p.Name
+}
+
+func rows(p Props) int {
+	if p.Rows > 0 {
+		return p.Rows
+	}
+	return 4
+}
+
+// ── Component ────────────────────────────────────────────────────────────────
+
+// Textarea renders a labelled multi-line text field.
+//
+// Usage:
+//
+//	@textarea.Textarea(textarea.Props{
+//	    Name:        "bio",
+//	    Label:       "Bio",
+//	    Placeholder: "Tell us about yourself…",
+//	    Rows:        5,
+//	    Required:    true,
+//	})
+templ Textarea(p Props) {
+	<div class="flex flex-col gap-1.5">
+		if p.Label != "" {
+			<label
+				for={ labelID(p) }
+				class={ func() string {
+					base := "text-sm font-medium"
+					if p.Disabled { return base + " text-text-muted" }
+					if p.Error != "" { return base + " text-error-700" }
+					return base + " text-text-primary"
+				}() }
+			>
+				{ p.Label }
+				if p.Required {
+					<span class="text-error-500 ml-0.5" aria-hidden="true">*</span>
+				}
+			</label>
+		}
+		<textarea
+			id={ labelID(p) }
+			name={ p.Name }
+			rows={ fmt.Sprint(rows(p)) }
+			placeholder={ p.Placeholder }
+			required?={ p.Required }
+			disabled?={ p.Disabled }
+			readonly?={ p.Readonly }
+			class={ fieldClasses(p) }
+			if p.Error != "" {
+				aria-describedby={ labelID(p) + "-error" }
+				aria-invalid="true"
+			}
+			{ p.Attrs... }
+		>{ p.Value }</textarea>
+		if p.Error != "" {
+			<p id={ labelID(p) + "-error" } class="text-xs text-error-500">{ p.Error }</p>
+		} else if p.Helper != "" {
+			<p class="text-xs text-text-muted">{ p.Helper }</p>
+		}
+	</div>
+}

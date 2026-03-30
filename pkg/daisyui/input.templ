@@ -1,0 +1,94 @@
+package daisyui
+
+import "strings"
+
+// ── Input ─────────────────────────────────────────────────────────────────────
+
+type InputVariant string
+type InputSize string
+
+const (
+	InputPrimary   InputVariant = "input-primary"
+	InputSecondary InputVariant = "input-secondary"
+	InputAccent    InputVariant = "input-accent"
+	InputError     InputVariant = "input-error"
+	InputWarning   InputVariant = "input-warning"
+	InputSuccess   InputVariant = "input-success"
+	InputInfo      InputVariant = "input-info"
+)
+
+const (
+	InputSizeXS InputSize = "input-xs"
+	InputSizeSM InputSize = "input-sm"
+	InputSizeMD InputSize = ""
+	InputSizeLG InputSize = "input-lg"
+	InputSizeXL InputSize = "input-xl"
+)
+
+type InputProps struct {
+	Type        string
+	Name        string
+	Placeholder string
+	Value       string
+	Label       string
+	Helper      string
+	Error       string
+	Variant     InputVariant
+	Size        InputSize
+	Disabled    bool
+	Required    bool
+	Class       string
+	Attrs       templ.Attributes
+}
+
+func inputClasses(p InputProps) string {
+	parts := []string{"input", "w-full"}
+	if p.Variant != "" {
+		parts = append(parts, string(p.Variant))
+	}
+	if p.Error != "" {
+		parts = append(parts, "input-error")
+	}
+	if p.Size != "" {
+		parts = append(parts, string(p.Size))
+	}
+	if p.Class != "" {
+		parts = append(parts, p.Class)
+	}
+	return strings.Join(parts, " ")
+}
+
+func inputType(p InputProps) string {
+	if p.Type != "" {
+		return p.Type
+	}
+	return "text"
+}
+
+templ Input(p InputProps) {
+	<fieldset class="fieldset">
+		if p.Label != "" {
+			<label class="fieldset-label">
+				{ p.Label }
+				if p.Required {
+					<span class="text-error ml-0.5">*</span>
+				}
+			</label>
+		}
+		<input
+			type={ inputType(p) }
+			name={ p.Name }
+			placeholder={ p.Placeholder }
+			value={ p.Value }
+			disabled?={ p.Disabled }
+			required?={ p.Required }
+			class={ inputClasses(p) }
+			{ p.Attrs... }
+		/>
+		if p.Error != "" {
+			<p class="fieldset-label text-error">{ p.Error }</p>
+		} else if p.Helper != "" {
+			<p class="fieldset-label">{ p.Helper }</p>
+		}
+	</fieldset>
+}

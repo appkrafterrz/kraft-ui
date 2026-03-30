@@ -1,0 +1,143 @@
+package avatar
+
+// ── Types ────────────────────────────────────────────────────────────────────
+
+type Size string
+
+const (
+	SizeXS Size = "xs"
+	SizeSM Size = "sm"
+	SizeMD Size = "md"
+	SizeLG Size = "lg"
+	SizeXL Size = "xl"
+	Size2XL Size = "2xl"
+)
+
+type Props struct {
+	Src     string // image URL; if empty, shows initials
+	Alt     string
+	Name    string // used to derive initials and background color
+	Size    Size
+	Class   string
+	Attrs   templ.Attributes
+}
+
+func sizeClasses(s Size) string {
+	return map[Size]string{
+		SizeXS:  "h-6 w-6 text-xs",
+		SizeSM:  "h-8 w-8 text-sm",
+		SizeMD:  "h-9 w-9 text-sm",
+		SizeLG:  "h-10 w-10 text-base",
+		SizeXL:  "h-12 w-12 text-base",
+		Size2XL: "h-16 w-16 text-lg",
+	}[s]
+}
+
+func wrapperClasses(p Props) string {
+	base := "relative inline-flex items-center justify-center rounded-full overflow-hidden flex-shrink-0 font-medium select-none"
+	size := sizeClasses(p.Size)
+	if p.Size == "" {
+		size = "h-9 w-9 text-sm"
+	}
+	extra := ""
+	if p.Class != "" {
+		extra = " " + p.Class
+	}
+	return base + " " + size + extra
+}
+
+// initials extracts up to 2 initials from a name.
+func initials(name string) string {
+	if name == "" {
+		return "?"
+	}
+	parts := []rune{}
+	inWord := false
+	for _, c := range name {
+		if c == ' ' || c == '\t' {
+			inWord = false
+		} else if !inWord {
+			parts = append(parts, c)
+			inWord = true
+			if len(parts) == 2 {
+				break
+			}
+		}
+	}
+	return string(parts)
+}
+
+// bgColor derives a deterministic color from the name.
+func bgColor(name string) string {
+	colors := []string{
+		"bg-brand-500 text-white",
+		"bg-success-500 text-white",
+		"bg-warning-500 text-white",
+		"bg-error-500 text-white",
+		"bg-info-500 text-white",
+		"bg-purple-500 text-white",
+		"bg-pink-500 text-white",
+		"bg-teal-500 text-white",
+	}
+	if name == "" {
+		return colors[0]
+	}
+	sum := 0
+	for _, c := range name {
+		sum += int(c)
+	}
+	return colors[sum%len(colors)]
+}
+
+// ── Component ────────────────────────────────────────────────────────────────
+
+// Avatar renders a circular user avatar with image or initials fallback.
+//
+// Usage:
+//
+//	@avatar.Avatar(avatar.Props{Src: "/path/to/photo.jpg", Alt: "Jane Doe", Size: avatar.SizeLG})
+//	@avatar.Avatar(avatar.Props{Name: "Jane Doe", Size: avatar.SizeMD})
+templ Avatar(p Props) {
+	<span class={ wrapperClasses(p) } { p.Attrs... }>
+		if p.Src != "" {
+			<img
+				src={ p.Src }
+				alt={ p.Alt }
+				class="h-full w-full object-cover"
+			/>
+		} else {
+			<span class={ "absolute inset-0 flex items-center justify-center font-semibold " + bgColor(p.Name) }>
+				{ initials(p.Name) }
+			</span>
+		}
+	</span>
+}
+
+// AvatarGroup renders a stack of overlapping avatars.
+templ AvatarGroup(limit int, props []Props) {
+	<div class="flex -space-x-2">
+		for i, p := range props {
+			if i < limit {
+				<span class="ring-2 ring-surface rounded-full">
+					@Avatar(p)
+				</span>
+			}
+		}
+		if len(props) > limit {
+			<span class="ring-2 ring-surface rounded-full">
+				@Avatar(Props{
+					Name:  overflow(len(props) - limit),
+					Size:  props[0].Size,
+					Class: props[0].Class,
+				})
+			</span>
+		}
+	</div>
+}
+
+func overflow(n int) string {
+	if n > 9 {
+		return "+9"
+	}
+	return "+" + string(rune('0'+n))
+}

@@ -1,0 +1,129 @@
+package docs
+
+import (
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/button"
+	"github.com/appkrafterrz/kraft-ui/web/components"
+	"github.com/appkrafterrz/kraft-ui/web/layouts"
+)
+
+templ ButtonPage() {
+	@layouts.DocsShell(layouts.Meta{
+		Title:       "Button",
+		Description: "Trigger actions or navigate. Supports variants, sizes, loading states, and icon buttons.",
+	}) {
+		<!-- Page header -->
+		<div class="mb-8">
+			<h1 class="text-3xl font-bold tracking-tight mb-3">Button</h1>
+			<p class="text-text-secondary text-lg">
+				The most-used component. Supports variants, sizes, loading states,
+				icon-only mode, and full HTMX passthrough via <code class="font-mono text-sm text-brand-500">Attrs</code>.
+			</p>
+		</div>
+		<!-- Variants -->
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Variants</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{
+				{
+					Title:    "Component",
+					Language: "go",
+					Code: `@button.Button(button.Props{Variant: button.VariantPrimary}) { Primary }
+@button.Button(button.Props{Variant: button.VariantSecondary}) { Secondary }
+@button.Button(button.Props{Variant: button.VariantOutline}) { Outline }
+@button.Button(button.Props{Variant: button.VariantGhost}) { Ghost }
+@button.Button(button.Props{Variant: button.VariantDestructive}) { Destructive }
+@button.Button(button.Props{Variant: button.VariantLink}) { Link }`,
+				},
+			},
+		}) {
+			<div class="flex flex-wrap gap-3 items-center justify-center">
+				@button.Button(button.Props{Variant: button.VariantPrimary}) { Primary }
+				@button.Button(button.Props{Variant: button.VariantSecondary}) { Secondary }
+				@button.Button(button.Props{Variant: button.VariantOutline}) { Outline }
+				@button.Button(button.Props{Variant: button.VariantGhost}) { Ghost }
+				@button.Button(button.Props{Variant: button.VariantDestructive}) { Destructive }
+				@button.Button(button.Props{Variant: button.VariantLink}) { Link }
+			</div>
+		}
+		<!-- Sizes -->
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Sizes</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{
+				{
+					Title:    "Component",
+					Language: "go",
+					Code: `@button.Button(button.Props{Size: button.SizeXS}) { Extra Small }
+@button.Button(button.Props{Size: button.SizeSM}) { Small }
+@button.Button(button.Props{Size: button.SizeMD}) { Medium }
+@button.Button(button.Props{Size: button.SizeLG}) { Large }
+@button.Button(button.Props{Size: button.SizeXL}) { Extra Large }`,
+				},
+			},
+		}) {
+			<div class="flex flex-wrap gap-3 items-center justify-center">
+				@button.Button(button.Props{Size: button.SizeXS}) { Extra Small }
+				@button.Button(button.Props{Size: button.SizeSM}) { Small }
+				@button.Button(button.Props{Size: button.SizeMD}) { Medium }
+				@button.Button(button.Props{Size: button.SizeLG}) { Large }
+				@button.Button(button.Props{Size: button.SizeXL}) { Extra Large }
+			</div>
+		}
+		<!-- With HTMX -->
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">With HTMX</h2>
+		<p class="text-text-secondary mb-4 text-sm">
+			Pass any <code class="font-mono text-xs text-brand-500">hx-*</code> attribute via the <code class="font-mono text-xs text-brand-500">Attrs</code> field.
+		</p>
+		@components.CodeBlock(components.CodeBlockProps{
+			Title:    "handler.go",
+			Language: "go",
+			Code: `func (h *Handler) Submit(w http.ResponseWriter, r *http.Request) {
+    // Process...
+    templ.Handler(components.SuccessToast()).ServeHTTP(w, r)
+}`,
+		})
+		<div class="mt-3">
+			@components.CodeBlock(components.CodeBlockProps{
+				Title:    "page.templ",
+				Language: "go",
+				Code: `@button.Button(button.Props{
+    Variant: button.VariantPrimary,
+    Type:    "submit",
+    Attrs: templ.Attributes{
+        "hx-post":      "/api/submit",
+        "hx-target":    "#result",
+        "hx-swap":      "outerHTML",
+        "hx-indicator": "#spinner",
+    },
+}) {
+    Save changes
+}`,
+			})
+		</div>
+		<!-- Disabled state -->
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Disabled & Loading</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{
+				{
+					Title:    "Component",
+					Language: "go",
+					Code: `@button.Button(button.Props{Disabled: true}) { Disabled }
+@button.ButtonLoading(button.Props{Variant: button.VariantPrimary}, "Saving...")`,
+				},
+			},
+		}) {
+			<div class="flex gap-3 items-center">
+				@button.Button(button.Props{Disabled: true}) { Disabled }
+				@button.ButtonLoading(button.Props{Variant: button.VariantPrimary}, "Saving...")
+			</div>
+		}
+		<!-- Props table -->
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Props</h2>
+		@components.PropsTable([]components.PropRow{
+			{Prop: "Variant", Type: "Variant", Default: "VariantPrimary", Desc: "Visual style: primary, secondary, outline, ghost, destructive, link"},
+			{Prop: "Size", Type: "Size", Default: "SizeMD", Desc: "Button height and padding: xs, sm, md, lg, xl"},
+			{Prop: "Type", Type: "string", Default: `"button"`, Desc: `HTML button type: "button", "submit", or "reset"`},
+			{Prop: "Disabled", Type: "bool", Default: "false", Desc: "Disables click interaction and applies opacity-50"},
+			{Prop: "Class", Type: "string", Default: `""`, Desc: "Extra Tailwind classes merged onto the button"},
+			{Prop: "Attrs", Type: "templ.Attributes", Default: "nil", Desc: "Spread any HTML attribute: hx-*, data-*, aria-*, @click, etc."},
+		})
+	}
+}

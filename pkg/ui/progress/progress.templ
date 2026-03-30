@@ -1,0 +1,117 @@
+package progress
+
+import "fmt"
+
+// ── Types ────────────────────────────────────────────────────────────────────
+
+type Variant string
+type Size string
+
+const (
+	VariantDefault Variant = "default"
+	VariantSuccess Variant = "success"
+	VariantWarning Variant = "warning"
+	VariantError   Variant = "error"
+)
+
+const (
+	SizeSM Size = "sm"
+	SizeMD Size = "md"
+	SizeLG Size = "lg"
+)
+
+type Props struct {
+	Value   int     // 0–100
+	Max     int     // defaults to 100
+	Variant Variant
+	Size    Size
+	Label   string  // accessibility label
+	ShowPct bool    // show numeric percentage
+	Class   string
+	Attrs   templ.Attributes
+}
+
+func trackClasses(p Props) string {
+	base := "w-full overflow-hidden rounded-full bg-surface-subtle"
+	size := map[Size]string{
+		SizeSM: "h-1.5",
+		SizeMD: "h-2.5",
+		SizeLG: "h-4",
+	}[p.Size]
+	if p.Size == "" {
+		size = "h-2.5"
+	}
+	if p.Class != "" {
+		return base + " " + size + " " + p.Class
+	}
+	return base + " " + size
+}
+
+func fillClasses(p Props) string {
+	base := "h-full rounded-full transition-all duration-500 ease-out"
+	color := map[Variant]string{
+		VariantDefault: "bg-brand-500",
+		VariantSuccess: "bg-success-500",
+		VariantWarning: "bg-warning-500",
+		VariantError:   "bg-error-500",
+	}[p.Variant]
+	if p.Variant == "" {
+		color = "bg-brand-500"
+	}
+	return base + " " + color
+}
+
+func pct(p Props) int {
+	max := p.Max
+	if max <= 0 {
+		max = 100
+	}
+	if p.Value <= 0 {
+		return 0
+	}
+	if p.Value >= max {
+		return 100
+	}
+	return (p.Value * 100) / max
+}
+
+// ── Component ────────────────────────────────────────────────────────────────
+
+// Progress renders a progress bar.
+//
+// Usage:
+//
+//	@progress.Progress(progress.Props{Value: 65, ShowPct: true})
+//	@progress.Progress(progress.Props{Value: 3, Max: 5, Variant: progress.VariantSuccess})
+templ Progress(p Props) {
+	<div class={ func() string {
+		if p.ShowPct {
+			return "flex items-center gap-3"
+		}
+		return "w-full"
+	}() } { p.Attrs... }>
+		<div
+			role="progressbar"
+			aria-valuemin="0"
+			aria-valuemax={ fmt.Sprint(func() int {
+				if p.Max > 0 { return p.Max }
+				return 100
+			}()) }
+			aria-valuenow={ fmt.Sprint(p.Value) }
+			if p.Label != "" {
+				aria-label={ p.Label }
+			}
+			class={ trackClasses(p) }
+		>
+			<div
+				class={ fillClasses(p) }
+				style={ fmt.Sprintf("width: %d%%", pct(p)) }
+			></div>
+		</div>
+		if p.ShowPct {
+			<span class="text-sm font-medium text-text-secondary w-10 flex-shrink-0 text-right">
+				{ fmt.Sprintf("%d%%", pct(p)) }
+			</span>
+		}
+	</div>
+}

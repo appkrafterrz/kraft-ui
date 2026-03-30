@@ -1,0 +1,175 @@
+package table
+
+import "fmt"
+
+// ── Types ────────────────────────────────────────────────────────────────────
+
+type Column struct {
+	Key      string
+	Label    string
+	Sortable bool
+	Class    string // extra td/th classes (e.g. "text-right w-24")
+}
+
+type Props struct {
+	Striped bool
+	Hover   bool
+	Compact bool
+	Class   string
+	Attrs   templ.Attributes
+}
+
+func tableClasses(p Props) string {
+	base := "w-full text-sm text-left border-collapse"
+	if p.Class != "" {
+		return base + " " + p.Class
+	}
+	return base
+}
+
+func cellPadding(p Props) string {
+	if p.Compact {
+		return "px-3 py-1.5"
+	}
+	return "px-4 py-3"
+}
+
+// ── Components ───────────────────────────────────────────────────────────────
+
+// Table is the root container — wraps everything in a scrollable border.
+//
+// Usage:
+//
+//	@table.Root(table.Props{Hover: true}) {
+//	    @table.Header() {
+//	        @table.Row() {
+//	            @table.Head("Name", "")
+//	            @table.Head("Status", "")
+//	            @table.Head("Actions", "text-right")
+//	        }
+//	    }
+//	    @table.Body() {
+//	        @table.Row() {
+//	            @table.Cell("Alice", "font-medium")
+//	            @table.Cell("Active", "")
+//	            @table.Cell("...", "text-right")
+//	        }
+//	    }
+//	}
+templ Root(p Props) {
+	<div class="w-full overflow-auto rounded-lg border border-border shadow-xs">
+		<table class={ tableClasses(p) } { p.Attrs... }>
+			{ children... }
+		</table>
+	</div>
+}
+
+templ Header() {
+	<thead class="bg-surface-muted border-b border-border">
+		{ children... }
+	</thead>
+}
+
+templ Body() {
+	<tbody class="divide-y divide-border bg-surface">
+		{ children... }
+	</tbody>
+}
+
+templ Footer() {
+	<tfoot class="border-t border-border bg-surface-muted">
+		{ children... }
+	</tfoot>
+}
+
+// Row renders a table row. Accepts hover styling via parent Table config.
+templ Row() {
+	<tr class="transition-colors hover:bg-surface-muted/50 group">
+		{ children... }
+	</tr>
+}
+
+// Head renders a <th> cell.
+templ Head(label, class string) {
+	<th
+		scope="col"
+		class={ "px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-muted " + class }
+	>
+		{ label }
+	</th>
+}
+
+// SortHead renders a sortable <th> cell with HTMX.
+//
+// Usage:
+//
+//	@table.SortHead(table.SortHeadProps{
+//	    Label:     "Name",
+//	    SortKey:   "name",
+//	    CurrentKey: currentSort,
+//	    Asc:       isAsc,
+//	    HTMX:      templ.Attributes{"hx-get": "/users", "hx-target": "#table-body"},
+//	})
+type SortHeadProps struct {
+	Label      string
+	SortKey    string
+	CurrentKey string
+	Asc        bool
+	Class      string
+	HTMX       templ.Attributes
+}
+
+templ SortHead(p SortHeadProps) {
+	<th
+		scope="col"
+		class={ "px-4 py-3 " + p.Class }
+	>
+		<button
+			type="button"
+			class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-text-muted hover:text-text-primary transition-colors group"
+			{ p.HTMX... }
+		>
+			{ p.Label }
+			<span class="flex flex-col">
+				<svg class={ "h-2.5 w-2.5 " + func() string {
+					if p.CurrentKey == p.SortKey && p.Asc { return "text-brand-500" }
+					return "text-border group-hover:text-text-muted"
+				}() } viewBox="0 0 10 6" fill="currentColor">
+					<path d="M0 6l5-6 5 6H0z"/>
+				</svg>
+				<svg class={ "h-2.5 w-2.5 " + func() string {
+					if p.CurrentKey == p.SortKey && !p.Asc { return "text-brand-500" }
+					return "text-border group-hover:text-text-muted"
+				}() } viewBox="0 0 10 6" fill="currentColor">
+					<path d="M0 0l5 6 5-6H0z"/>
+				</svg>
+			</span>
+		</button>
+	</th>
+}
+
+// Cell renders a <td> cell.
+templ Cell(content, class string) {
+	<td class={ "px-4 py-3 text-text-primary " + class }>{ content }</td>
+}
+
+// CellSlot renders a <td> cell with slot content (for complex cells).
+templ CellSlot(class string) {
+	<td class={ "px-4 py-3 " + class }>
+		{ children... }
+	</td>
+}
+
+// EmptyRow renders a full-width empty state row.
+templ EmptyRow(cols int, message string) {
+	<tr>
+		<td colspan={ fmt.Sprint(cols) } class="px-4 py-12 text-center text-sm text-text-muted">
+			<div class="flex flex-col items-center gap-2">
+				<svg class="h-8 w-8 text-border" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+				</svg>
+				{ message }
+			</div>
+		</td>
+	</tr>
+}

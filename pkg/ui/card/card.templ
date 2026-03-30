@@ -1,0 +1,98 @@
+package card
+
+// ── Types ────────────────────────────────────────────────────────────────────
+
+type Props struct {
+	Class   string
+	Padding bool // default true; set false for full-bleed content
+	Shadow  bool // default true
+	Border  bool // default true
+	Attrs   templ.Attributes
+}
+
+func classes(p Props) string {
+	base := "rounded-xl bg-surface"
+	if p.Border {
+		base += " border border-border"
+	}
+	if p.Shadow {
+		base += " shadow-sm"
+	}
+	if p.Class != "" {
+		base += " " + p.Class
+	}
+	return base
+}
+
+// ── Components ───────────────────────────────────────────────────────────────
+
+// Card is a composable surface container.
+//
+// Usage:
+//
+//	@card.Card(card.Props{}) {
+//	    @card.Header() {
+//	        @card.Title() { My Card }
+//	        @card.Description() { A short description }
+//	    }
+//	    @card.Body() {
+//	        <p>Card content here.</p>
+//	    }
+//	    @card.Footer() {
+//	        @button.Button(button.Props{}) { Save }
+//	    }
+//	}
+templ Card(p Props) {
+	<div class={ classes(p) } { p.Attrs... }>
+		{ children... }
+	</div>
+}
+
+templ Header() {
+	<div class="flex flex-col gap-1.5 p-6 pb-0">
+		{ children... }
+	</div>
+}
+
+templ Title() {
+	<h3 class="text-lg font-semibold leading-none tracking-tight text-text-primary">
+		{ children... }
+	</h3>
+}
+
+templ Description() {
+	<p class="text-sm text-text-muted">
+		{ children... }
+	</p>
+}
+
+templ Body() {
+	<div class="p-6">
+		{ children... }
+	</div>
+}
+
+templ Footer() {
+	<div class="flex items-center gap-3 px-6 pb-6 pt-0">
+		{ children... }
+	</div>
+}
+
+// CardSimple is a convenience wrapper with a single padded body.
+templ CardSimple(title, description string) {
+	@Card(Props{Shadow: true, Border: true}) {
+		if title != "" || description != "" {
+			@Header() {
+				if title != "" {
+					@Title() { { title } }
+				}
+				if description != "" {
+					@Description() { { description } }
+				}
+			}
+		}
+		@Body() {
+			{ children... }
+		}
+	}
+}

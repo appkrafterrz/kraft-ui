@@ -1,0 +1,426 @@
+package pages
+
+import (
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/alert"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/avatar"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/badge"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/button"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/card"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/input"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/progress"
+	"github.com/appkrafterrz/kraft-ui/pkg/ui/spinner"
+	"github.com/appkrafterrz/kraft-ui/pkg/daisyui"
+)
+
+// PlaygroundPreviewContent renders the preview pane content for a given component ID.
+templ PlaygroundPreviewContent(id string) {
+	<div class="w-full flex flex-col gap-10 p-10 max-w-2xl mx-auto">
+		switch id {
+			case "button":
+				@previewButton()
+			case "badge":
+				@previewBadge()
+			case "alert":
+				@previewAlert()
+			case "card":
+				@previewCard()
+			case "input":
+				@previewInput()
+			case "avatar":
+				@previewAvatar()
+			case "spinner":
+				@previewSpinner()
+			case "progress":
+				@previewProgress()
+			case "daisy-button":
+				@previewDaisyButton()
+			case "daisy-badge":
+				@previewDaisyBadge()
+			case "daisy-alert":
+				@previewDaisyAlert()
+			case "daisy-card":
+				@previewDaisyCard()
+			case "daisy-input":
+				@previewDaisyInput()
+			default:
+				<div class="text-center text-text-muted py-20">
+					<p class="text-sm">Unknown component: { id }</p>
+				</div>
+		}
+	</div>
+}
+
+// ── kraft-ui previews ─────────────────────────────────────────────────────────
+
+templ previewButton() {
+	@previewSection("Variants") {
+		<div class="flex flex-wrap gap-3 items-center">
+			@button.Button(button.Props{Variant: button.VariantPrimary}) { Primary }
+			@button.Button(button.Props{Variant: button.VariantSecondary}) { Secondary }
+			@button.Button(button.Props{Variant: button.VariantOutline}) { Outline }
+			@button.Button(button.Props{Variant: button.VariantGhost}) { Ghost }
+			@button.Button(button.Props{Variant: button.VariantDestructive}) { Destructive }
+			@button.Button(button.Props{Variant: button.VariantLink}) { Link }
+		</div>
+	}
+	@previewSection("Sizes") {
+		<div class="flex flex-wrap gap-3 items-center">
+			@button.Button(button.Props{Size: button.SizeXS}) { Extra Small }
+			@button.Button(button.Props{Size: button.SizeSM}) { Small }
+			@button.Button(button.Props{Size: button.SizeMD}) { Medium }
+			@button.Button(button.Props{Size: button.SizeLG}) { Large }
+			@button.Button(button.Props{Size: button.SizeXL}) { Extra Large }
+		</div>
+	}
+	@previewSection("States") {
+		<div class="flex flex-wrap gap-3 items-center">
+			@button.Button(button.Props{}) { Normal }
+			@button.Button(button.Props{Disabled: true}) { Disabled }
+			@button.ButtonLoading(button.Props{}, "Loading…")
+		</div>
+	}
+}
+
+templ previewBadge() {
+	@previewSection("Variants") {
+		<div class="flex flex-wrap gap-2 items-center">
+			@badge.Badge(badge.Props{Variant: badge.VariantDefault}) { Default }
+			@badge.Badge(badge.Props{Variant: badge.VariantSecondary}) { Secondary }
+			@badge.Badge(badge.Props{Variant: badge.VariantSuccess}) { Success }
+			@badge.Badge(badge.Props{Variant: badge.VariantWarning}) { Warning }
+			@badge.Badge(badge.Props{Variant: badge.VariantDestructive}) { Destructive }
+			@badge.Badge(badge.Props{Variant: badge.VariantInfo}) { Info }
+			@badge.Badge(badge.Props{Variant: badge.VariantOutline}) { Outline }
+		</div>
+	}
+	@previewSection("With Dot") {
+		<div class="flex flex-wrap gap-2 items-center">
+			@badge.Badge(badge.Props{Variant: badge.VariantSuccess, Dot: true}) { Active }
+			@badge.Badge(badge.Props{Variant: badge.VariantDestructive, Dot: true}) { Offline }
+			@badge.Badge(badge.Props{Variant: badge.VariantWarning, Dot: true}) { Pending }
+			@badge.Badge(badge.Props{Variant: badge.VariantSecondary, Dot: true}) { Away }
+		</div>
+	}
+}
+
+templ previewAlert() {
+	@previewSection("Variants") {
+		<div class="flex flex-col gap-3 w-full">
+			@alert.Alert(alert.Props{Variant: alert.VariantInfo, Title: "Info"}) {
+				This is an informational alert with helpful context.
+			}
+			@alert.Alert(alert.Props{Variant: alert.VariantSuccess, Title: "Success"}) {
+				Your changes have been saved successfully.
+			}
+			@alert.Alert(alert.Props{Variant: alert.VariantWarning, Title: "Warning"}) {
+				Please review before continuing.
+			}
+			@alert.Alert(alert.Props{Variant: alert.VariantDestructive, Title: "Error"}) {
+				Something went wrong. Please try again.
+			}
+		</div>
+	}
+	@previewSection("Dismissible") {
+		<div class="w-full">
+			@alert.Alert(alert.Props{Variant: alert.VariantInfo, Title: "Dismissible", Dismissible: true}) {
+				Click the × to dismiss this alert.
+			}
+		</div>
+	}
+}
+
+templ previewCard() {
+	@previewSection("Card with Header, Body & Footer") {
+		<div class="w-full max-w-sm">
+			@card.Card(card.Props{Shadow: true, Border: true}) {
+				@card.Header() {
+					@card.Title() { Card Title }
+					@card.Description() { A short description of the card content. }
+				}
+				@card.Body() {
+					<p class="text-sm text-text-secondary">This is the card body. Put any content here.</p>
+				}
+				@card.Footer() {
+					@button.Button(button.Props{Variant: button.VariantPrimary, Size: button.SizeSM}) { Save }
+					@button.Button(button.Props{Variant: button.VariantOutline, Size: button.SizeSM}) { Cancel }
+				}
+			}
+		</div>
+	}
+	@previewSection("Simple Card") {
+		<div class="w-full max-w-sm">
+			@card.CardSimple("Simple Card", "No footer needed.") {
+				<p class="text-sm text-text-secondary">A convenience wrapper for common card layouts.</p>
+			}
+		</div>
+	}
+}
+
+templ previewInput() {
+	@previewSection("States") {
+		<div class="flex flex-col gap-4 w-full max-w-sm">
+			@input.Input(input.Props{
+				Name:        "email",
+				Type:        input.TypeEmail,
+				Label:       "Email address",
+				Placeholder: "you@example.com",
+				Required:    true,
+			})
+			@input.Input(input.Props{
+				Name:        "search",
+				Label:       "Disabled",
+				Placeholder: "Not editable",
+				Disabled:    true,
+			})
+			@input.Input(input.Props{
+				Name:        "password",
+				Type:        input.TypePassword,
+				Label:       "Password",
+				Placeholder: "••••••••",
+				Error:       "Password must be at least 8 characters.",
+			})
+			@input.Input(input.Props{
+				Name:        "username",
+				Label:       "Username",
+				Placeholder: "kraftmaster",
+				Helper:      "This will be your public display name.",
+			})
+		</div>
+	}
+	@previewSection("Search Input") {
+		<div class="w-full max-w-sm">
+			@input.SearchInput(input.Props{
+				Name:        "q",
+				Placeholder: "Search components…",
+			})
+		</div>
+	}
+}
+
+templ previewAvatar() {
+	@previewSection("With Image / Initials") {
+		<div class="flex flex-wrap gap-3 items-center">
+			@avatar.Avatar(avatar.Props{Name: "Jane Doe", Size: avatar.SizeLG})
+			@avatar.Avatar(avatar.Props{Name: "Alex Kim", Size: avatar.SizeLG})
+			@avatar.Avatar(avatar.Props{Name: "Sam Rivera", Size: avatar.SizeLG})
+			@avatar.Avatar(avatar.Props{Name: "Morgan Lee", Size: avatar.SizeLG})
+		</div>
+	}
+	@previewSection("Sizes") {
+		<div class="flex flex-wrap gap-3 items-center">
+			@avatar.Avatar(avatar.Props{Name: "Jane Doe", Size: avatar.SizeXS})
+			@avatar.Avatar(avatar.Props{Name: "Jane Doe", Size: avatar.SizeSM})
+			@avatar.Avatar(avatar.Props{Name: "Jane Doe", Size: avatar.SizeMD})
+			@avatar.Avatar(avatar.Props{Name: "Jane Doe", Size: avatar.SizeLG})
+			@avatar.Avatar(avatar.Props{Name: "Jane Doe", Size: avatar.SizeXL})
+			@avatar.Avatar(avatar.Props{Name: "Jane Doe", Size: avatar.Size2XL})
+		</div>
+	}
+	@previewSection("Avatar Group") {
+		@avatar.AvatarGroup(4, []avatar.Props{
+			{Name: "Alice Johnson"},
+			{Name: "Bob Smith"},
+			{Name: "Carol White"},
+			{Name: "David Brown"},
+			{Name: "Eve Davis"},
+		})
+	}
+}
+
+templ previewSpinner() {
+	@previewSection("Sizes") {
+		<div class="flex flex-wrap gap-4 items-center">
+			@spinner.Spinner(spinner.Props{Size: spinner.SizeXS})
+			@spinner.Spinner(spinner.Props{Size: spinner.SizeSM})
+			@spinner.Spinner(spinner.Props{Size: spinner.SizeMD})
+			@spinner.Spinner(spinner.Props{Size: spinner.SizeLG})
+			@spinner.Spinner(spinner.Props{Size: spinner.SizeXL})
+		</div>
+	}
+	@previewSection("Variants") {
+		<div class="flex flex-wrap gap-4 items-center">
+			@spinner.Spinner(spinner.Props{Size: spinner.SizeLG, Variant: spinner.VariantBrand})
+			@spinner.Spinner(spinner.Props{Size: spinner.SizeLG, Variant: spinner.VariantMuted})
+			<span class="bg-brand-500 rounded p-2 inline-flex">
+				@spinner.Spinner(spinner.Props{Size: spinner.SizeLG, Variant: spinner.VariantWhite})
+			</span>
+		</div>
+	}
+}
+
+templ previewProgress() {
+	@previewSection("Values") {
+		<div class="flex flex-col gap-4 w-full">
+			@progress.Progress(progress.Props{Value: 25, ShowPct: true})
+			@progress.Progress(progress.Props{Value: 50, ShowPct: true})
+			@progress.Progress(progress.Props{Value: 75, ShowPct: true})
+			@progress.Progress(progress.Props{Value: 100, ShowPct: true})
+		</div>
+	}
+	@previewSection("Variants") {
+		<div class="flex flex-col gap-4 w-full">
+			@progress.Progress(progress.Props{Value: 60, Variant: progress.VariantDefault, ShowPct: true})
+			@progress.Progress(progress.Props{Value: 60, Variant: progress.VariantSuccess, ShowPct: true})
+			@progress.Progress(progress.Props{Value: 60, Variant: progress.VariantWarning, ShowPct: true})
+			@progress.Progress(progress.Props{Value: 60, Variant: progress.VariantError, ShowPct: true})
+		</div>
+	}
+	@previewSection("Sizes") {
+		<div class="flex flex-col gap-4 w-full">
+			@progress.Progress(progress.Props{Value: 65, Size: progress.SizeSM})
+			@progress.Progress(progress.Props{Value: 65, Size: progress.SizeMD})
+			@progress.Progress(progress.Props{Value: 65, Size: progress.SizeLG})
+		</div>
+	}
+}
+
+// ── DaisyUI previews ──────────────────────────────────────────────────────────
+
+templ previewDaisyButton() {
+	@previewSection("Variants") {
+		<div class="flex flex-wrap gap-3 items-center">
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary}) { Primary }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonSecondary}) { Secondary }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonAccent}) { Accent }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonNeutral}) { Neutral }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonGhost}) { Ghost }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonLink}) { Link }
+		</div>
+	}
+	@previewSection("Semantic") {
+		<div class="flex flex-wrap gap-3 items-center">
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonSuccess}) { Success }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonWarning}) { Warning }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonError}) { Error }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonInfo}) { Info }
+		</div>
+	}
+	@previewSection("Sizes") {
+		<div class="flex flex-wrap gap-3 items-center">
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeXS}) { XS }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeSM}) { SM }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary}) { MD }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeLG}) { LG }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Size: daisyui.ButtonSizeXL}) { XL }
+		</div>
+	}
+	@previewSection("Outline & States") {
+		<div class="flex flex-wrap gap-3 items-center">
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonOutline}) { Outline }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Disabled: true}) { Disabled }
+			@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary, Wide: true}) { Wide }
+		</div>
+	}
+}
+
+templ previewDaisyBadge() {
+	@previewSection("Variants") {
+		<div class="flex flex-wrap gap-2 items-center">
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary}) { Primary }
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeSecondary}) { Secondary }
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeAccent}) { Accent }
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeNeutral}) { Neutral }
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeGhost}) { Ghost }
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeOutline}) { Outline }
+		</div>
+	}
+	@previewSection("Semantic") {
+		<div class="flex flex-wrap gap-2 items-center">
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeSuccess}) { Success }
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeWarning}) { Warning }
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeError}) { Error }
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgeInfo}) { Info }
+		</div>
+	}
+	@previewSection("Sizes") {
+		<div class="flex flex-wrap gap-2 items-center">
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary, Size: daisyui.BadgeSizeXS}) { XS }
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary, Size: daisyui.BadgeSizeSM}) { SM }
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary}) { MD }
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary, Size: daisyui.BadgeSizeLG}) { LG }
+			@daisyui.Badge(daisyui.BadgeProps{Variant: daisyui.BadgePrimary, Size: daisyui.BadgeSizeXL}) { XL }
+		</div>
+	}
+}
+
+templ previewDaisyAlert() {
+	@previewSection("Variants") {
+		<div class="flex flex-col gap-3 w-full">
+			@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertInfo}) {
+				<span>Informational alert from DaisyUI.</span>
+			}
+			@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertSuccess}) {
+				<span>Action completed successfully.</span>
+			}
+			@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertWarning}) {
+				<span>Please review before proceeding.</span>
+			}
+			@daisyui.Alert(daisyui.AlertProps{Variant: daisyui.AlertError}) {
+				<span>Something went wrong. Try again.</span>
+			}
+		</div>
+	}
+}
+
+templ previewDaisyCard() {
+	@previewSection("Card") {
+		<div class="w-full max-w-sm">
+			@daisyui.Card(daisyui.CardProps{Bordered: true}) {
+				@daisyui.CardBody() {
+					@daisyui.CardTitle() { DaisyUI Card }
+					<p class="text-sm">A themed card component using DaisyUI v5 classes and CSS variables.</p>
+					@daisyui.CardActions() {
+						@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary}) { Buy Now }
+					}
+				}
+			}
+		</div>
+	}
+	@previewSection("Compact Card") {
+		<div class="w-full max-w-sm">
+			@daisyui.Card(daisyui.CardProps{Bordered: true, Compact: true}) {
+				@daisyui.CardBody() {
+					@daisyui.CardTitle() { Compact Card }
+					<p class="text-sm">Less padding, same style.</p>
+				}
+			}
+		</div>
+	}
+}
+
+templ previewDaisyInput() {
+	@previewSection("Input Variants") {
+		<div class="flex flex-col gap-4 w-full max-w-sm">
+			@daisyui.Input(daisyui.InputProps{
+				Placeholder: "Default input",
+			})
+			@daisyui.Input(daisyui.InputProps{
+				Variant:     daisyui.InputPrimary,
+				Placeholder: "Primary",
+			})
+			@daisyui.Input(daisyui.InputProps{
+				Variant:     daisyui.InputSuccess,
+				Placeholder: "Success",
+			})
+			@daisyui.Input(daisyui.InputProps{
+				Variant:     daisyui.InputError,
+				Placeholder: "Error state",
+			})
+			@daisyui.Input(daisyui.InputProps{
+				Placeholder: "Disabled input",
+				Disabled:    true,
+			})
+		</div>
+	}
+}
+
+// ── Shared helper ─────────────────────────────────────────────────────────────
+
+templ previewSection(label string) {
+	<div class="w-full">
+		<p class="text-xs font-semibold uppercase tracking-wider text-text-muted mb-4">{ label }</p>
+		<div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
+			{ children... }
+		</div>
+	</div>
+}

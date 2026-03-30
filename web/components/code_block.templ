@@ -1,0 +1,175 @@
+package components
+
+import "fmt"
+
+// ── Code block with copy button ───────────────────────────────────────────────
+
+type CodeBlockProps struct {
+	Language string // "go", "html", "bash", etc.
+	Code     string
+	Title    string // optional file name label
+}
+
+// CodeBlock renders a syntax-highlighted code block with a copy-to-clipboard button.
+//
+// Usage:
+//
+//	@components.CodeBlock(components.CodeBlockProps{
+//	    Language: "go",
+//	    Title:    "handler.go",
+//	    Code:     `@button.Button(button.Props{...}) { Click me }`,
+//	})
+templ CodeBlock(p CodeBlockProps) {
+	<div
+		class="relative rounded-lg overflow-hidden border border-white/10 bg-[#22272e]"
+		x-data="{ copied: false }"
+	>
+		<!-- Title bar -->
+		if p.Title != "" || p.Language != "" {
+			<div class="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-[#2d333b]">
+				<span class="text-xs font-mono text-[#adbac7]">
+					if p.Title != "" {
+						{ p.Title }
+					} else {
+						{ p.Language }
+					}
+				</span>
+				@copyButton()
+			</div>
+		} else {
+			<div class="absolute top-3 right-3 z-10">
+				@copyButton()
+			</div>
+		}
+		<!-- Code -->
+		<div class="overflow-x-auto">
+			<pre class="p-4 text-sm leading-relaxed m-0 bg-transparent"><code class={ "language-" + p.Language + " !bg-transparent" }>{ p.Code }</code></pre>
+		</div>
+	</div>
+}
+
+templ copyButton() {
+	<button
+		@click="
+			navigator.clipboard.writeText($el.closest('[x-data]').querySelector('code').textContent);
+			copied = true;
+			setTimeout(() => copied = false, 2000);
+		"
+		class="flex items-center gap-1.5 rounded px-2 py-1 text-xs font-medium transition-colors text-[#768390] hover:text-[#adbac7] hover:bg-white/10"
+		x-bind:title="copied ? 'Copied!' : 'Copy code'"
+	>
+		<template x-if="!copied">
+			<svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor">
+				<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z"/>
+			</svg>
+		</template>
+		<template x-if="copied">
+			<svg class="h-3.5 w-3.5 text-success-500" viewBox="0 0 16 16" fill="currentColor">
+				<path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/>
+			</svg>
+		</template>
+		<span x-text="copied ? 'Copied!' : 'Copy'"></span>
+	</button>
+}
+
+// ── Preview + Code tabbed container ──────────────────────────────────────────
+
+// ComponentPreview wraps a live preview with a tabbed code view below it.
+// Activate tabs via Alpine.js.
+type PreviewProps struct {
+	Codes []CodeBlockProps // can have multiple tabs (e.g., "Component" + "Usage")
+	Class string           // extra classes for the preview area
+}
+
+templ ComponentPreview(p PreviewProps) {
+	<div class="not-prose">
+		<div
+			class="rounded-xl border border-border overflow-hidden"
+			x-data="{ activeTab: 'preview' }"
+		>
+			<!-- Tab bar -->
+			<div class="flex items-center gap-0 border-b border-border bg-surface-muted px-1 pt-1">
+				<button
+					@click="activeTab = 'preview'"
+					type="button"
+					class="px-3 py-1.5 text-xs font-medium rounded-t transition-colors"
+					:class="activeTab === 'preview'
+						? 'bg-surface text-text-primary border border-border border-b-0 -mb-px'
+						: 'text-text-muted hover:text-text-secondary'"
+				>
+					Preview
+				</button>
+				for i, c := range p.Codes {
+					<button
+						@click={ "activeTab = 'code-" + fmt.Sprint(i) + "'" }
+						type="button"
+						class="px-3 py-1.5 text-xs font-medium rounded-t transition-colors"
+						:class={ "activeTab === 'code-" + fmt.Sprint(i) + "' ? 'bg-surface text-text-primary border border-border border-b-0 -mb-px' : 'text-text-muted hover:text-text-secondary'" }
+					>
+						if c.Title != "" {
+							{ c.Title }
+						} else {
+							{ c.Language }
+						}
+					</button>
+				}
+			</div>
+			<!-- Preview pane -->
+			<div
+				x-show="activeTab === 'preview'"
+				class={ "flex items-center justify-center min-h-32 p-8 bg-[radial-gradient(circle,_oklch(92%_0_0)_1px,_transparent_1px)] bg-[size:20px_20px] bg-surface " + p.Class }
+			>
+				{ children... }
+			</div>
+			<!-- Code panes -->
+			for i, c := range p.Codes {
+				<div
+					x-show={ "activeTab === 'code-" + fmt.Sprint(i) + "'" }
+					style="display:none"
+				>
+					@CodeBlock(c)
+				</div>
+			}
+		</div>
+	</div>
+}
+
+// ── Props table ───────────────────────────────────────────────────────────────
+
+type PropRow struct {
+	Prop     string
+	Type     string
+	Default  string
+	Required bool
+	Desc     string
+}
+
+templ PropsTable(rows []PropRow) {
+	<div class="not-prose overflow-x-auto rounded-lg border border-border">
+		<table class="w-full text-sm">
+			<thead class="bg-surface-muted border-b border-border">
+				<tr>
+					<th class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-text-muted w-36">Prop</th>
+					<th class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-text-muted w-40">Type</th>
+					<th class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-text-muted w-24">Default</th>
+					<th class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-text-muted">Description</th>
+				</tr>
+			</thead>
+			<tbody class="divide-y divide-border">
+				for _, r := range rows {
+					<tr class="hover:bg-surface-muted/50">
+						<td class="px-4 py-2.5 font-mono text-xs text-text-primary">
+							{ r.Prop }
+							if r.Required {
+								<span class="text-error-500 ml-0.5">*</span>
+							}
+						</td>
+						<td class="px-4 py-2.5 font-mono text-xs text-brand-500">{ r.Type }</td>
+						<td class="px-4 py-2.5 font-mono text-xs text-text-muted">{ r.Default }</td>
+						<td class="px-4 py-2.5 text-text-secondary">{ r.Desc }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}

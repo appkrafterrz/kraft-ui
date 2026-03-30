@@ -1,0 +1,71 @@
+package docs
+
+import (
+	"github.com/appkrafterrz/kraft-ui/pkg/daisyui"
+	"github.com/appkrafterrz/kraft-ui/web/components"
+	"github.com/appkrafterrz/kraft-ui/web/layouts"
+)
+
+templ DaisyCardPage() {
+	@layouts.DocsShell(layouts.Meta{Title: "DaisyUI — Card", Description: "DaisyUI card component for content containers."}) {
+		<div class="mb-8">
+			<h1 class="text-3xl font-bold tracking-tight mb-3">Card <span class="text-sm font-normal text-text-muted ml-2">DaisyUI</span></h1>
+			<p class="text-text-secondary text-lg">Content containers using DaisyUI's composable <code class="font-mono text-base">card</code> classes.</p>
+		</div>
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Default</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Card(daisyui.CardProps{Bordered: true}) {
+    @daisyui.CardBody() {
+        @daisyui.CardTitle() { Kraft your UI }
+        <p>Components designed for the GOTH stack.</p>
+        @daisyui.CardActions() {
+            @daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary}) { Learn more }
+        }
+    }
+}`,
+			}},
+		}) {
+			<div class="w-72">
+				@daisyui.Card(daisyui.CardProps{Bordered: true}) {
+					@daisyui.CardBody() {
+						@daisyui.CardTitle() { Kraft your UI }
+						<p class="text-sm">Components designed for the GOTH stack.</p>
+						@daisyui.CardActions() {
+							@daisyui.Button(daisyui.ButtonProps{Variant: daisyui.ButtonPrimary}) { Learn more }
+						}
+					}
+				}
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Compact</h2>
+		@components.ComponentPreview(components.PreviewProps{
+			Codes: []components.CodeBlockProps{{
+				Language: "go",
+				Code: `@daisyui.Card(daisyui.CardProps{Compact: true, Bordered: true}) {
+    @daisyui.CardBody() {
+        @daisyui.CardTitle() { Compact card }
+        <p>Less padding, same structure.</p>
+    }
+}`,
+			}},
+		}) {
+			<div class="w-64">
+				@daisyui.Card(daisyui.CardProps{Compact: true, Bordered: true}) {
+					@daisyui.CardBody() {
+						@daisyui.CardTitle() { Compact card }
+						<p class="text-sm">Less padding, same structure.</p>
+					}
+				}
+			</div>
+		}
+		<h2 class="text-xl font-semibold mb-4 mt-10 pt-6 border-t border-border">Props</h2>
+		@components.PropsTable([]components.PropRow{
+			{Prop: "Bordered", Type: "bool", Default: "false", Desc: "Adds a visible border"},
+			{Prop: "Compact", Type: "bool", Default: "false", Desc: "Reduces padding with card-compact"},
+			{Prop: "Class", Type: "string", Default: `""`, Desc: "Extra classes on the card root"},
+			{Prop: "Attrs", Type: "templ.Attributes", Default: "nil", Desc: "Spread any HTML attribute"},
+		})
+	}
+}

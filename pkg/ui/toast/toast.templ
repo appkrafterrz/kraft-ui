@@ -1,0 +1,123 @@
+package toast
+
+// ── Types ────────────────────────────────────────────────────────────────────
+
+type Variant string
+
+const (
+	VariantDefault     Variant = "default"
+	VariantSuccess     Variant = "success"
+	VariantWarning     Variant = "warning"
+	VariantDestructive Variant = "destructive"
+	VariantInfo        Variant = "info"
+)
+
+type Props struct {
+	ID      string // unique ID for HTMX OOB targeting (default: "toast")
+	Variant Variant
+	Title   string
+	Message string
+}
+
+func classes(v Variant) string {
+	base := "flex items-start gap-3 w-full max-w-sm rounded-xl border p-4 shadow-lg text-sm pointer-events-auto"
+	variant := map[Variant]string{
+		VariantDefault:     "bg-surface border-border text-text-primary",
+		VariantSuccess:     "bg-success-50 border-success-500/30 text-success-700",
+		VariantWarning:     "bg-warning-50 border-warning-500/30 text-warning-700",
+		VariantDestructive: "bg-error-50 border-error-500/30 text-error-700",
+		VariantInfo:        "bg-info-50 border-info-500/30 text-info-700",
+	}[v]
+	if v == "" {
+		variant = "bg-surface border-border text-text-primary"
+	}
+	return base + " " + variant
+}
+
+func iconSVG(v Variant) string {
+	switch v {
+	case VariantSuccess:
+		return `<svg class="h-5 w-5 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>`
+	case VariantWarning:
+		return `<svg class="h-5 w-5 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>`
+	case VariantDestructive:
+		return `<svg class="h-5 w-5 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/></svg>`
+	case VariantInfo:
+		return `<svg class="h-5 w-5 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd"/></svg>`
+	default:
+		return `<svg class="h-5 w-5 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd"/></svg>`
+	}
+}
+
+// ── Components ───────────────────────────────────────────────────────────────
+
+// ToastRegion renders the fixed toast container — place once in your base layout.
+// Toasts are pushed here via HTMX OOB swaps.
+//
+// Usage in base layout:
+//
+//	@toast.ToastRegion()
+templ ToastRegion() {
+	<div
+		id="toast-region"
+		aria-live="polite"
+		aria-atomic="false"
+		class="fixed bottom-0 right-0 z-[100] p-4 pointer-events-none flex flex-col gap-2 max-w-sm w-full"
+	></div>
+}
+
+// Toast renders a single toast notification.
+// It auto-dismisses after 4 seconds via Alpine.js.
+//
+// HTMX OOB usage — push a toast from any handler response:
+//
+//	func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
+//	    // ... do work
+//	    w.Header().Set("Content-Type", "text/html")
+//	    component := toast.Toast(toast.Props{
+//	        Variant: toast.VariantSuccess,
+//	        Title:   "Created!",
+//	        Message: "Item was saved successfully.",
+//	    })
+//	    component.Render(r.Context(), w)
+//	}
+templ Toast(p Props) {
+	<div
+		id={ func() string {
+			if p.ID != "" { return p.ID }
+			return "toast-item"
+		}() }
+		hx-swap-oob={ "beforeend:#toast-region" }
+		x-data="{ visible: false }"
+		x-init="$nextTick(() => { visible = true; setTimeout(() => visible = false, 4000) })"
+		x-show="visible"
+		x-transition:enter="transition ease-out duration-300"
+		x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+		x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+		x-transition:leave="transition ease-in duration-200"
+		x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+		x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+		class={ classes(p.Variant) }
+		role="alert"
+		style="display:none"
+	>
+		@templ.Raw(iconSVG(p.Variant))
+		<div class="flex-1 min-w-0">
+			if p.Title != "" {
+				<p class="font-semibold">{ p.Title }</p>
+			}
+			if p.Message != "" {
+				<p class="text-sm mt-0.5 opacity-90">{ p.Message }</p>
+			}
+		</div>
+		<button
+			@click="visible = false"
+			class="ml-auto flex-shrink-0 rounded p-0.5 hover:bg-black/10 transition-colors"
+			aria-label="Dismiss"
+		>
+			<svg class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor">
+				<path d="M2.22 2.22a.75.75 0 011.06 0L8 6.94l4.72-4.72a.75.75 0 111.06 1.06L9.06 8l4.72 4.72a.75.75 0 11-1.06 1.06L8 9.06l-4.72 4.72a.75.75 0 01-1.06-1.06L6.94 8 2.22 3.28a.75.75 0 010-1.06z"/>
+			</svg>
+		</button>
+	</div>
+}
