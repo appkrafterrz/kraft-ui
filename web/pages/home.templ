@@ -231,15 +231,23 @@ templ Home() {
 }
 
 templ featureCard(iconSVG, title, desc string) {
-	@card.Card(card.Props{Border: true, Shadow: false}) {
-		@card.Body() {
-			<div class="h-9 w-9 rounded-lg bg-brand-50 text-brand-500 flex items-center justify-center mb-4">
+	<div class="group relative rounded-xl border border-border bg-surface p-6 overflow-hidden cursor-default
+	            transition-all duration-300
+	            hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-500/10 hover:border-brand-300">
+		<!-- top glow line -->
+		<div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+		<!-- background tint -->
+		<div class="absolute inset-0 bg-gradient-to-br from-brand-50/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+		<!-- content -->
+		<div class="relative">
+			<div class="h-10 w-10 rounded-xl bg-brand-50 text-brand-500 flex items-center justify-center mb-4
+			            transition-all duration-300 group-hover:bg-brand-100 group-hover:scale-110 group-hover:shadow-md group-hover:shadow-brand-200">
 				@templ.Raw(iconSVG)
 			</div>
-			<h3 class="font-semibold text-text-primary mb-1.5">{ title }</h3>
+			<h3 class="font-semibold text-text-primary mb-2 transition-colors duration-200 group-hover:text-brand-600">{ title }</h3>
 			<p class="text-sm text-text-muted leading-relaxed">{ desc }</p>
-		}
-	}
+		</div>
+	</div>
 }
 
 templ installStep(num, label, code, lang string) {
