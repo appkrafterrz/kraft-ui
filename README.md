@@ -1,43 +1,99 @@
+<div align="center">
+
 # kraft-ui
 
-Typed UI components for the GOTH stack — Go, Templ, HTMX, Tailwind CSS, and Alpine.js.
+**Typed UI components for the GOTH stack**
 
-Stop rewriting the same form fields, buttons, and cards. kraft-ui gives you a consistent,
-typed component library that integrates naturally with server-side Go rendering and HTMX
-interactions — no React, no build step for components, no JavaScript framework.
+[![CI](https://github.com/appkrafterrz/kraft-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/appkrafterrz/kraft-ui/actions/workflows/ci.yml)
+[![Go](https://img.shields.io/badge/go-1.23-00ADD8?logo=go&logoColor=white)](https://go.dev)
+[![DaisyUI](https://img.shields.io/badge/daisyui-v5-FF9903?logo=daisyui&logoColor=white)](https://daisyui.com)
+[![Tailwind CSS](https://img.shields.io/badge/tailwind-v4-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![License: MIT](https://img.shields.io/badge/license-MIT-22c55e)](LICENSE)
+
+Go · Templ · HTMX · Tailwind CSS · Alpine.js
+
+**[Docs & Playground →](https://kraft-ui.appkrafterrz.com)**
+
+</div>
+
+---
+
+Stop rewriting the same form fields, buttons, and cards on every project.
+kraft-ui gives you a consistent, typed component library that integrates naturally
+with server-side Go rendering and HTMX — no React, no JavaScript build step, no magic.
+
+```go
+// One line. Typed. Consistent. HTMX-ready.
+@button.Button(button.Props{
+    Variant: button.VariantPrimary,
+    Attrs:   templ.Attributes{"hx-post": "/save", "hx-target": "#result"},
+}) { Save changes }
+```
+
+---
+
+## Why?
+
+A form input field in raw Tailwind is 16 lines. With kraft-ui it is 4.
+
+```html
+<!-- Before: 16 lines, memorise every class, repeat on every field -->
+<div class="flex flex-col gap-1.5">
+  <label class="text-sm font-medium text-text-primary">Email</label>
+  <input type="email" placeholder="you@example.com"
+    class="rounded-md border border-error-500 px-3 py-2 text-sm bg-surface
+           text-text-primary placeholder:text-text-muted focus:outline-none
+           focus:ring-2 focus:ring-error-500 transition-colors" />
+  <p class="text-xs text-error-600">Invalid email address</p>
+</div>
+```
+
+```go
+// After: typed, consistent, one place to update
+@input.Input(input.Props{
+    Type:  "email",
+    Label: "Email",
+    Error: "Invalid email address",
+})
+```
+
+More importantly — every developer on your team writes it the same way.
+When the design changes, you update one file.
 
 ---
 
 ## What's included
 
-**Primitives** — components built on Tailwind CSS with typed Go props:
+### Primitives — Tailwind CSS, typed Go props
 
-| Component  | Import path                           |
-|------------|---------------------------------------|
-| Button     | `github.com/appkrafterrz/kraft-ui/pkg/ui/button`   |
-| Input      | `github.com/appkrafterrz/kraft-ui/pkg/ui/input`    |
-| Textarea   | `github.com/appkrafterrz/kraft-ui/pkg/ui/textarea` |
-| Card       | `github.com/appkrafterrz/kraft-ui/pkg/ui/card`     |
-| Badge      | `github.com/appkrafterrz/kraft-ui/pkg/ui/badge`    |
-| Alert      | `github.com/appkrafterrz/kraft-ui/pkg/ui/alert`    |
-| Avatar     | `github.com/appkrafterrz/kraft-ui/pkg/ui/avatar`   |
-| Spinner    | `github.com/appkrafterrz/kraft-ui/pkg/ui/spinner`  |
-| Progress   | `github.com/appkrafterrz/kraft-ui/pkg/ui/progress` |
-| Modal      | `github.com/appkrafterrz/kraft-ui/pkg/ui/modal`    |
-| Toast      | `github.com/appkrafterrz/kraft-ui/pkg/ui/toast`    |
-| Dropdown   | `github.com/appkrafterrz/kraft-ui/pkg/ui/dropdown` |
-| Tabs       | `github.com/appkrafterrz/kraft-ui/pkg/ui/tabs`     |
-| Table      | `github.com/appkrafterrz/kraft-ui/pkg/ui/table`    |
+| Component  | Import |
+|------------|--------|
+| Button     | `pkg/ui/button`   |
+| Input      | `pkg/ui/input`    |
+| Textarea   | `pkg/ui/textarea` |
+| Card       | `pkg/ui/card`     |
+| Badge      | `pkg/ui/badge`    |
+| Alert      | `pkg/ui/alert`    |
+| Avatar     | `pkg/ui/avatar`   |
+| Spinner    | `pkg/ui/spinner`  |
+| Progress   | `pkg/ui/progress` |
+| Modal      | `pkg/ui/modal`    |
+| Toast      | `pkg/ui/toast`    |
+| Dropdown   | `pkg/ui/dropdown` |
+| Tabs       | `pkg/ui/tabs`     |
+| Table      | `pkg/ui/table`    |
 
-**DaisyUI wrappers** — DaisyUI v5 components wrapped as typed Templ components:
+### DaisyUI wrappers — 30+ themes, typed variants
 
-| Component  | Import path                                   |
-|------------|-----------------------------------------------|
-| Button     | `github.com/appkrafterrz/kraft-ui/pkg/daisyui` |
-| Badge      | `github.com/appkrafterrz/kraft-ui/pkg/daisyui` |
-| Alert      | `github.com/appkrafterrz/kraft-ui/pkg/daisyui` |
-| Card       | `github.com/appkrafterrz/kraft-ui/pkg/daisyui` |
-| Input      | `github.com/appkrafterrz/kraft-ui/pkg/daisyui` |
+| Component  | Before (raw DaisyUI) | After (kraft-ui) |
+|------------|----------------------|------------------|
+| Button     | `"btn btn-primary"`  | `daisyui.ButtonPrimary` |
+| Badge      | `"badge badge-success"` | `daisyui.BadgeSuccess` |
+| Alert      | `"alert alert-error"` | `daisyui.AlertError` |
+| Card       | nested divs          | `daisyui.Card(...)` |
+| Input      | fieldset boilerplate | `daisyui.Input(...)` |
+
+Mistype `daisyui.BadgePrimry` — `go build` catches it. Raw class strings don't.
 
 ---
 
@@ -47,108 +103,74 @@ interactions — no React, no build step for components, no JavaScript framework
 go get github.com/appkrafterrz/kraft-ui
 ```
 
-Use a primitive:
-
 ```go
-import "github.com/appkrafterrz/kraft-ui/pkg/ui/button"
+import (
+    "github.com/appkrafterrz/kraft-ui/pkg/ui/button"
+    "github.com/appkrafterrz/kraft-ui/pkg/ui/input"
+    "github.com/appkrafterrz/kraft-ui/pkg/daisyui"
+)
 
-@button.Button(button.Props{Variant: button.VariantPrimary}) {
-    Click me
-}
-```
+// Primitive
+@button.Button(button.Props{Variant: button.VariantPrimary}) { Click me }
 
-Use a DaisyUI wrapper:
-
-```go
-import "github.com/appkrafterrz/kraft-ui/pkg/daisyui"
-
+// DaisyUI wrapper
 @daisyui.Input(daisyui.InputProps{
     Type:  "email",
     Label: "Email",
     Error: errors["email"],
 })
-```
 
-Pass HTMX attributes to any component:
-
-```go
+// HTMX — pass any attribute via templ.Attributes
 @button.Button(button.Props{
     Variant: button.VariantPrimary,
     Attrs: templ.Attributes{
-        "hx-post":   "/api/save",
+        "hx-post":   "/api/submit",
         "hx-target": "#result",
         "hx-swap":   "innerHTML",
     },
-}) { Save }
+}) { Submit }
 ```
 
----
-
-## Why kraft-ui?
-
-**For primitives:** a form input field in raw Tailwind is 16 lines. With kraft-ui it is 4.
-More importantly, every developer on your team writes it the same way.
-When the design changes, you update one file.
-
-**For DaisyUI wrappers:** DaisyUI is great, but using it directly in Templ means building
-class strings by hand, no IDE autocomplete, and typos that only show up at runtime.
-kraft-ui wraps every DaisyUI component in a typed Go struct. Mistype a variant constant
-and `go build` catches it before your users do.
-
-```
-// Before
-<span class={
-  func() string {
-    switch order.Status {
-    case "shipped":   return "badge badge-primary"
-    case "delivered": return "badge badge-success"
-    default:          return "badge badge-neutral"
-    }
-  }()
-}>{ order.Status }</span>
-
-// After
-@daisyui.Badge(daisyui.BadgeProps{
-    Variant: orderVariant(order.Status),
-}) { { order.Status } }
-```
-
----
-
-## Docs and playground
-
-Run the docs site locally:
+### Copy-paste (recommended for production)
 
 ```bash
-make setup     # install npm deps and tidy go modules
-make dev       # hot reload: templ + css + go (requires air)
+# Copy any component directly into your project — own it completely
+cp -r pkg/ui/button your-project/components/button
 ```
 
-Or for a quick one-shot build:
-
-```bash
-make run       # build and run once at http://localhost:3000
-```
-
-Visit `http://localhost:3000` for the full component docs and interactive playground.
+No runtime dependency. No upgrade surprises. MIT licensed.
 
 ---
 
-## Copy-paste or module
+## Run locally
 
-**As a module** — `go get` and import as shown above. Pull in updates with `go get -u`.
+```bash
+git clone https://github.com/appkrafterrz/kraft-ui
+cd kraft-ui
+make setup   # npm install + go mod tidy
+make dev     # hot reload at http://localhost:3000
+```
 
-**Copy-paste** — copy any component from `pkg/ui/` or `pkg/daisyui/` directly into your project
-and own it completely. No runtime dependency, no upgrade surprises. This is the recommended
-approach for production apps.
+`make dev` runs templ, Tailwind, and the Go server in parallel with live reload.
+
+---
+
+## Stack
+
+| Layer      | Technology |
+|------------|------------|
+| Language   | Go 1.23    |
+| Templates  | [Templ](https://templ.guide) |
+| Interactivity | [HTMX](https://htmx.org) |
+| Styling    | [Tailwind CSS v4](https://tailwindcss.com) |
+| Components | [DaisyUI v5](https://daisyui.com) |
+| Client state | [Alpine.js](https://alpinejs.dev) |
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
----
+See [CONTRIBUTING.md](CONTRIBUTING.md). PRs welcome — new components, better patterns, bug fixes.
 
 ## License
 
